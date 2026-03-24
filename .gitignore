@@ -1,3 +1,7 @@
+# Claude
+.claude/
+CLAUDE.md
+
 # Environment
 .env
 .env.*
@@ -20,6 +24,8 @@ build/
 # Spring Boot - local config
 jobscope-backend/src/main/resources/application-local.properties
 jobscope-backend/src/main/resources/application-local.yml
+jobscope-backend/src/main/resources/application-secret.properties
+jobscope-backend/src/main/resources/application-secret.yml
 
 # Logs
 *.log

@@ -1,4 +1,4 @@
-package org.example.jobscopebackend;
+package com.jobscope;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
