@@ -1,0 +1,42 @@
+# Claude
+.claude/
+CLAUDE.md
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE - VSCode
+.vscode/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Spring Boot - local config
+jobscope-backend/src/main/resources/application-local.properties
+jobscope-backend/src/main/resources/application-local.yml
+jobscope-backend/src/main/resources/application-secret.properties
+jobscope-backend/src/main/resources/application-secret.yml
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (for future frontend)
+node_modules/
+dist/
+.next/
+.nuxt/
