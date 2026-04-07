@@ -2,6 +2,9 @@
 .claude/
 CLAUDE.md
 
+# CodeRabbit
+.coderabbit.yaml
+
 # Environment
 .env
 .env.*
