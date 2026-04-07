@@ -1,0 +1,86 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: jobscope-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - db-net
+
+  backend:
+    build:
+      context: ./jobscope-backend
+      dockerfile: Dockerfile
+    container_name: jobscope-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRE: ${JWT_ACCESS_EXPIRE}
+      JWT_REFRESH_EXPIRE: ${JWT_REFRESH_EXPIRE}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-validate}
+    expose:
+      - "8080"
+    networks:
+      - db-net
+      - backend-net
+
+  frontend:
+    build:
+      context: ./jobscope-frontend
+      dockerfile: Dockerfile
+    container_name: jobscope-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - frontend-net
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: jobscope-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+    networks:
+      - backend-net
+      - frontend-net
+
+volumes:
+  mysql_data:
+
+networks:
+  db-net:
+  backend-net:
+  frontend-net:
