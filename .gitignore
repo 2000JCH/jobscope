@@ -8,6 +8,7 @@ CLAUDE.md
 # Environment
 .env
 .env.*
+!.env.example
 
 # IDE - IntelliJ
 .idea/
