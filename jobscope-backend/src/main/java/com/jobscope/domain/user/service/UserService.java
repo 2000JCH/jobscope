@@ -80,7 +80,7 @@ public class UserService {
      */
     @Transactional
     public RefreshResponse refreshToken(String refreshToken) {
-        if (!jwtProvider.validateToken(refreshToken)) {
+        if (refreshToken == null || !jwtProvider.validateToken(refreshToken)) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
