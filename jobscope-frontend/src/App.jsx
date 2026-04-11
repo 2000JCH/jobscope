@@ -1,15 +1,20 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import KakaoCallbackPage from './pages/KakaoCallbackPage';
 import DashboardPage from './pages/DashboardPage';
 import ApplicationPage from './pages/ApplicationPage';
+import MyPage from './pages/MyPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/applications" element={<ApplicationPage />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<KakaoCallbackPage />} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/applications" element={<ProtectedRoute><ApplicationPage /></ProtectedRoute>} />
+        <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
