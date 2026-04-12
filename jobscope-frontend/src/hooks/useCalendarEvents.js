@@ -14,7 +14,8 @@ export function useCalendarEvents() {
           day.events.map((ev) => ({
             id: `${ev.type}-${ev.applicationId}-${day.date}-${ev.time}`,
             title: `${ev.companyName} ${ev.label}`,
-            start: `${day.date}T${ev.time}`,
+            start: day.date,
+            allDay: true,
             extendedProps: { ...ev, date: day.date },
             backgroundColor: ev.type === 'INTERVIEW' ? '#4dabf7' : '#ff6b6b',
             borderColor: ev.type === 'INTERVIEW' ? '#339af0' : '#fa5252',
