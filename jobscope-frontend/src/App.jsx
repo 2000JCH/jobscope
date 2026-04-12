@@ -11,7 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<KakaoCallbackPage />} />
+        <Route path="/oauth/callback/kakao" element={<KakaoCallbackPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/applications" element={<ProtectedRoute><ApplicationPage /></ProtectedRoute>} />
         <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
