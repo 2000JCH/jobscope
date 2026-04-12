@@ -1,0 +1,35 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet {
+  width: 100%;
+  max-height: 90dvh;
+  background: #fff;
+  border-radius: 1.25rem 1.25rem 0 0;
+  padding: 0.75rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.handle {
+  width: 2.5rem;
+  height: 0.25rem;
+  background: #ddd;
+  border-radius: 0.125rem;
+  margin: 0 auto 1rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.content {
+  padding-bottom: 1rem;
+}
