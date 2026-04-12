@@ -3,8 +3,10 @@ import MainPage from './pages/MainPage';
 import KakaoCallbackPage from './pages/KakaoCallbackPage';
 import DashboardPage from './pages/DashboardPage';
 import ApplicationPage from './pages/ApplicationPage';
+import CalendarPage from './pages/CalendarPage';
 import MyPage from './pages/MyPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import BottomNav from './components/common/BottomNav';
 
 function App() {
   return (
@@ -12,9 +14,42 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/oauth/callback/kakao" element={<KakaoCallbackPage />} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/applications" element={<ProtectedRoute><ApplicationPage /></ProtectedRoute>} />
-        <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+              <BottomNav />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/applications"
+          element={
+            <ProtectedRoute>
+              <ApplicationPage />
+              <BottomNav />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <CalendarPage />
+              <BottomNav />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mypage"
+          element={
+            <ProtectedRoute>
+              <MyPage />
+              <BottomNav />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

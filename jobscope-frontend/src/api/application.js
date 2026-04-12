@@ -1,7 +1,17 @@
 import instance from './axios';
 
 export const fetchApplications = (params) =>
-  instance.get('/api/applications', { params });
+  instance.get('/api/applications', {
+    params,
+    paramsSerializer: (p) => {
+      const sp = new URLSearchParams();
+      Object.entries(p).forEach(([k, v]) => {
+        if (Array.isArray(v)) v.forEach((item) => sp.append(k, item));
+        else if (v != null) sp.append(k, v);
+      });
+      return sp.toString();
+    },
+  });
 
 export const fetchApplication = (applicationId) =>
   instance.get(`/api/applications/${applicationId}`);
