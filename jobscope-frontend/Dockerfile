@@ -13,7 +13,7 @@ ENV VITE_KAKAO_CLIENT_ID=$VITE_KAKAO_CLIENT_ID
 ENV VITE_KAKAO_REDIRECT_URI=$VITE_KAKAO_REDIRECT_URI
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 COPY . .
 RUN npm run build
