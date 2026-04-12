@@ -2,8 +2,21 @@ package com.jobscope.domain.application.service;
 
 import com.jobscope.domain.application.dto.request.CreateApplicationRequest;
 import com.jobscope.domain.application.dto.request.UpdateApplicationRequest;
-import com.jobscope.domain.application.dto.response.*;
-import com.jobscope.domain.application.entity.*;
+import com.jobscope.domain.application.dto.response.ApplicationDetailResponse;
+import com.jobscope.domain.application.dto.response.ApplicationHistoryResponse;
+import com.jobscope.domain.application.dto.response.ApplicationSummaryResponse;
+import com.jobscope.domain.application.dto.response.CalendarDateResponse;
+import com.jobscope.domain.application.dto.response.CalendarEventResponse;
+import com.jobscope.domain.application.dto.response.DashboardDeadlineResponse;
+import com.jobscope.domain.application.dto.response.DashboardResponse;
+import com.jobscope.domain.application.dto.response.DashboardScheduleResponse;
+import com.jobscope.domain.application.dto.response.DashboardSummaryResponse;
+import com.jobscope.domain.application.entity.Application;
+import com.jobscope.domain.application.entity.ApplicationHistory;
+import com.jobscope.domain.application.entity.ApplicationResult;
+import com.jobscope.domain.application.entity.ApplicationSort;
+import com.jobscope.domain.application.entity.CalendarEventType;
+import com.jobscope.domain.application.entity.StageResult;
 import com.jobscope.domain.application.repository.ApplicationHistoryRepository;
 import com.jobscope.domain.application.repository.ApplicationRepository;
 import com.jobscope.global.common.exception.BusinessException;
@@ -24,7 +37,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +99,7 @@ public class ApplicationService {
         Map<Long, String> latestStageMap = applicationHistoryRepository
                 .findLatestByApplicationIds(applicationIds)
                 .stream()
-                .collect(java.util.stream.Collectors.toMap(
+                .collect(Collectors.toMap(
                         h -> h.getApplication().getId(),
                         ApplicationHistory::getStage));
 
@@ -135,7 +152,7 @@ public class ApplicationService {
         Long dDay = application.calculateDDay(today);
 
         List<ApplicationHistoryResponse> histories = applicationHistoryRepository
-                .findByApplication_IdOrderByIdAsc(id)
+                .findByApplicationIdOrderByIdAsc(id)
                 .stream()
                 .map(ApplicationHistoryResponse::from)
                 .toList();
@@ -170,7 +187,7 @@ public class ApplicationService {
                 StageResult stageResult = request.getResult() == ApplicationResult.PASSED
                         ? StageResult.PASS : StageResult.FAIL;
                 // NOTE: id 최댓값 기준으로 최신 히스토리 판별 (created_at 사용 금지)
-                applicationHistoryRepository.findTopByApplication_IdOrderByIdDesc(id)
+                applicationHistoryRepository.findTopByApplicationIdOrderByIdDesc(id)
                         .ifPresent(history -> history.updateStageResultWithCompletion(
                                 stageResult, LocalDateTime.now(KST)));
             }

@@ -3,7 +3,14 @@ package com.jobscope.domain.application.entity;
 import com.jobscope.global.common.entity.SoftDeleteEntity;
 import com.jobscope.global.common.exception.BusinessException;
 import com.jobscope.global.common.exception.ErrorCode;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,12 +81,12 @@ public class Application extends SoftDeleteEntity {
 
     public void updateBasicInfo(String companyName, String jobPosition, LocalDate appliedAt,
                                 LocalDateTime deadlineAt, String jobPostingUrl, String memo) {
-        if (companyName != null) this.companyName = companyName;
-        if (jobPosition != null) this.jobPosition = jobPosition;
-        if (appliedAt != null) this.appliedAt = appliedAt;
-        if (deadlineAt != null) this.deadlineAt = deadlineAt;
-        if (jobPostingUrl != null) this.jobPostingUrl = jobPostingUrl;
-        if (memo != null) this.memo = memo;
+        if (companyName != null) { this.companyName = companyName; }
+        if (jobPosition != null) { this.jobPosition = jobPosition; }
+        if (appliedAt != null) { this.appliedAt = appliedAt; }
+        if (deadlineAt != null) { this.deadlineAt = deadlineAt; }
+        if (jobPostingUrl != null) { this.jobPostingUrl = jobPostingUrl; }
+        if (memo != null) { this.memo = memo; }
     }
 
     public void updateAlarmEnabled(boolean alarmEnabled) {

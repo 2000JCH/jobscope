@@ -2,7 +2,10 @@ package com.jobscope.domain.application.service;
 
 import com.jobscope.domain.application.dto.request.CreateHistoryRequest;
 import com.jobscope.domain.application.dto.request.UpdateHistoryRequest;
-import com.jobscope.domain.application.entity.*;
+import com.jobscope.domain.application.entity.Application;
+import com.jobscope.domain.application.entity.ApplicationHistory;
+import com.jobscope.domain.application.entity.ApplicationResult;
+import com.jobscope.domain.application.entity.StageResult;
 import com.jobscope.domain.application.repository.ApplicationHistoryRepository;
 import com.jobscope.domain.application.repository.ApplicationRepository;
 import com.jobscope.global.common.exception.BusinessException;
@@ -87,7 +90,7 @@ public class ApplicationHistoryService {
 
         // NOTE: id 최댓값 기준으로 최신 히스토리 판별 (created_at 사용 금지)
         if (request.getStageResult() != null && request.getStageResult() != StageResult.PENDING) {
-            applicationHistoryRepository.findTopByApplication_IdOrderByIdDesc(applicationId)
+            applicationHistoryRepository.findTopByApplicationIdOrderByIdDesc(applicationId)
                     .filter(latest -> latest.getId().equals(historyId))
                     .ifPresent(latest -> {
                         ApplicationResult appResult = request.getStageResult().toApplicationResult();

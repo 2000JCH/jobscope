@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public interface ApplicationHistoryRepository extends JpaRepository<ApplicationHistory, Long> {
 
-    List<ApplicationHistory> findByApplication_IdOrderByIdAsc(Long applicationId);
+    List<ApplicationHistory> findByApplicationIdOrderByIdAsc(Long applicationId);
 
-    Optional<ApplicationHistory> findTopByApplication_IdOrderByIdDesc(Long applicationId);
+    Optional<ApplicationHistory> findTopByApplicationIdOrderByIdDesc(Long applicationId);
 
     // NOTE: id 최댓값 기준으로 각 applicationId별 최신 히스토리 1건씩 조회 (N+1 방지)
     @Query("SELECT h FROM ApplicationHistory h WHERE h.id IN (" +
