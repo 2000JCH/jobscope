@@ -9,12 +9,14 @@ import styles from './CalendarPage.module.css';
 function CalendarPage() {
   const { events, loading, load } = useCalendarEvents();
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+  const [currentRange, setCurrentRange] = useState(null);
 
   const handleDatesSet = useCallback((info) => {
     const startDate = info.startStr.slice(0, 10);
     const exclusiveEnd = new Date(info.end);
     exclusiveEnd.setDate(exclusiveEnd.getDate() - 1);
     const endDate = exclusiveEnd.toISOString().slice(0, 10);
+    setCurrentRange({ startDate, endDate });
     load(startDate, endDate);
   }, [load]);
 
@@ -55,8 +57,13 @@ function CalendarPage() {
         isOpen={!!selectedApplicationId}
         applicationId={selectedApplicationId}
         onClose={() => setSelectedApplicationId(null)}
-        onDeleted={() => setSelectedApplicationId(null)}
-        onUpdated={() => {}}
+        onDeleted={() => {
+          setSelectedApplicationId(null);
+          if (currentRange) load(currentRange.startDate, currentRange.endDate);
+        }}
+        onUpdated={() => {
+          if (currentRange) load(currentRange.startDate, currentRange.endDate);
+        }}
       />
     </div>
   );
