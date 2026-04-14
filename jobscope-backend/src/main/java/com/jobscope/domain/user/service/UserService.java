@@ -1,11 +1,14 @@
 package com.jobscope.domain.user.service;
 
+import com.jobscope.domain.application.service.ApplicationService;
+import com.jobscope.domain.oauth.service.OAuthTokenService;
 import com.jobscope.domain.user.dto.request.UpdateUserRequest;
 import com.jobscope.domain.user.dto.response.UserResponse;
 import com.jobscope.domain.user.entity.User;
 import com.jobscope.domain.user.repository.UserRepository;
 import com.jobscope.global.auth.JwtProvider;
 import com.jobscope.global.auth.KakaoAuthService;
+import com.jobscope.global.auth.KakaoTokenInfo;
 import com.jobscope.global.auth.KakaoUserInfo;
 import com.jobscope.global.auth.dto.response.LoginResponse;
 import com.jobscope.global.auth.dto.response.LoginUserResponse;
@@ -28,6 +31,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final KakaoAuthService kakaoAuthService;
+    private final OAuthTokenService oAuthTokenService;
+    private final ApplicationService applicationService;
 
     /**
      * 카카오 인가코드로 로그인 또는 회원가입을 처리하고 JWT를 발급한다.
@@ -38,8 +43,8 @@ public class UserService {
      */
     @Transactional
     public LoginResponse kakaoLogin(String code) {
-        String kakaoAccessToken = kakaoAuthService.getKakaoAccessToken(code);
-        KakaoUserInfo kakaoUserInfo = kakaoAuthService.getKakaoUserInfo(kakaoAccessToken);
+        KakaoTokenInfo kakaoTokenInfo = kakaoAuthService.exchangeKakaoToken(code);
+        KakaoUserInfo kakaoUserInfo = kakaoAuthService.getKakaoUserInfo(kakaoTokenInfo.accessToken());
 
         User user = userRepository.findByKakaoId(kakaoUserInfo.kakaoId())
                 .map(existing -> {
@@ -60,6 +65,8 @@ public class UserService {
         LocalDateTime expiresAt = LocalDateTime.now()
                 .plusNanos(jwtProvider.getRefreshTokenExpire() * 1_000_000L);
         user.updateRefreshToken(refreshToken, expiresAt);
+
+        oAuthTokenService.saveOrUpdate(user.getId(), kakaoTokenInfo);
 
         log.info("[UserService] 카카오 로그인 완료 - userId: {}", user.getId());
 
@@ -145,6 +152,8 @@ public class UserService {
     @Transactional
     public void deleteUser(Long userId) {
         findUserById(userId);
+        applicationService.softDeleteAllByUserId(userId);
+        oAuthTokenService.deleteByUserId(userId);
         userRepository.deleteById(userId);
         log.info("[UserService] 회원 탈퇴 완료 - userId: {}", userId);
     }
