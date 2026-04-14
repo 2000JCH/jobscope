@@ -29,4 +29,17 @@ public interface ApplicationHistoryRepository extends JpaRepository<ApplicationH
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
+
+    // NOTE: AlarmScheduler 전용 — alarm_enabled=true이고 scheduled_at이 지정 범위인 히스토리 조회
+    // JOIN FETCH로 N+1 방지, @SQLRestriction으로 삭제된 지원건 자동 제외
+    @Query("SELECT h FROM ApplicationHistory h JOIN FETCH h.application a " +
+           "WHERE a.alarmEnabled = true " +
+           "AND h.scheduledAt IS NOT NULL " +
+           "AND h.scheduledAt BETWEEN :start AND :end")
+    List<ApplicationHistory> findScheduledAlarmTargets(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
+
+    // NOTE: GET /api/alarms 알림 이력 조회용 — historyId 배치 조회로 stage 이름 가져오기
+    List<ApplicationHistory> findByIdIn(List<Long> ids);
 }

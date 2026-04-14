@@ -17,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 
@@ -40,13 +41,13 @@ public class KakaoAuthService {
     private String redirectUri;
 
     /**
-     * 카카오 인가코드로 카카오 액세스 토큰을 교환한다.
+     * 카카오 인가코드로 액세스 토큰·리프레시 토큰을 교환한다.
      *
      * @param code 카카오 OAuth 인가코드
-     * @return 카카오 액세스 토큰
+     * @return KakaoTokenInfo (accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt)
      * @throws BusinessException 카카오 API 호출 실패 시 (KAKAO_AUTH_FAILED)
      */
-    public String getKakaoAccessToken(String code) {
+    public KakaoTokenInfo exchangeKakaoToken(String code) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -65,15 +66,44 @@ public class KakaoAuthService {
                     (Class<Map<String, Object>>) (Class<?>) Map.class
             );
 
-            Map<String, Object> body = response.getBody();
-            if (body == null || !body.containsKey("access_token")) {
-                throw new BusinessException(ErrorCode.KAKAO_AUTH_FAILED);
-            }
-
-            return (String) body.get("access_token");
+            return parseTokenResponse(response.getBody(), ErrorCode.KAKAO_AUTH_FAILED);
 
         } catch (RestClientException e) {
             log.error("[KakaoAuthService] 카카오 토큰 교환 실패 - {}", e.getMessage(), e);
+            throw new BusinessException(ErrorCode.KAKAO_AUTH_FAILED);
+        }
+    }
+
+    /**
+     * 카카오 리프레시 토큰으로 액세스 토큰을 갱신한다.
+     * 카카오 정책상 리프레시 토큰 잔여 30일 미만일 때만 새 refresh_token이 응답에 포함된다.
+     *
+     * @param refreshToken 기존 카카오 리프레시 토큰
+     * @return KakaoTokenInfo (refreshToken, refreshTokenExpiresAt은 갱신 없으면 null)
+     * @throws BusinessException 카카오 API 호출 실패 시 (ALARM_SEND_FAILED)
+     */
+    public KakaoTokenInfo refreshKakaoToken(String refreshToken) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "refresh_token");
+            params.add("client_id", clientId);
+            params.add("client_secret", clientSecret);
+            params.add("refresh_token", refreshToken);
+
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    KAKAO_TOKEN_URL,
+                    HttpMethod.POST,
+                    new HttpEntity<>(params, headers),
+                    (Class<Map<String, Object>>) (Class<?>) Map.class
+            );
+
+            return parseTokenResponse(response.getBody(), ErrorCode.KAKAO_AUTH_FAILED);
+
+        } catch (RestClientException e) {
+            log.error("[KakaoAuthService] 카카오 토큰 갱신 실패 - {}", e.getMessage(), e);
             throw new BusinessException(ErrorCode.KAKAO_AUTH_FAILED);
         }
     }
@@ -118,4 +148,27 @@ public class KakaoAuthService {
         }
     }
 
+    /**
+     * 카카오 토큰 API 응답을 KakaoTokenInfo로 파싱한다.
+     * refresh_token은 응답에 키가 존재할 때만 파싱하며, 없으면 null로 반환한다.
+     */
+    private KakaoTokenInfo parseTokenResponse(Map<String, Object> body, ErrorCode errorCode) {
+        if (body == null || !body.containsKey("access_token")) {
+            throw new BusinessException(errorCode);
+        }
+
+        String accessToken = (String) body.get("access_token");
+        int expiresIn = (int) body.get("expires_in");
+        LocalDateTime accessTokenExpiresAt = LocalDateTime.now().plusSeconds(expiresIn);
+
+        // NOTE: refresh_token은 초기 발급 시 항상 포함, refresh 시 잔여 30일 미만일 때만 포함 (카카오 정책)
+        String newRefreshToken = (String) body.get("refresh_token");
+        LocalDateTime refreshTokenExpiresAt = null;
+        if (newRefreshToken != null && body.containsKey("refresh_token_expires_in")) {
+            int refreshExpiresIn = (int) body.get("refresh_token_expires_in");
+            refreshTokenExpiresAt = LocalDateTime.now().plusSeconds(refreshExpiresIn);
+        }
+
+        return new KakaoTokenInfo(accessToken, accessTokenExpiresAt, newRefreshToken, refreshTokenExpiresAt);
+    }
 }

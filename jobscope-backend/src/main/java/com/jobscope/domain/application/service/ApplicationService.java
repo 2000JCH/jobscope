@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -276,6 +277,88 @@ public class ApplicationService {
      * @param endDate   조회 종료일 (inclusive)
      * @return 날짜별 이벤트 목록
      */
+    // ───────────────────────────────────────────────────────────────────────
+    // AlarmScheduler 전용 메서드 (AlarmService 경유 호출)
+    // ───────────────────────────────────────────────────────────────────────
+
+    /**
+     * 서류 마감 알림 대상 지원건을 조회한다. AlarmScheduler 전용.
+     * alarm_enabled=true이고 deadline_at이 지정 범위 내인 지원건 반환.
+     *
+     * @param start 조회 범위 시작 일시
+     * @param end   조회 범위 종료 일시
+     * @return 알림 대상 Application 목록
+     */
+    public List<Application> findDeadlineAlarmTargetsForScheduler(LocalDateTime start, LocalDateTime end) {
+        return applicationRepository.findAlarmDeadlineTargets(start, end);
+    }
+
+    /**
+     * 전형 일정 알림 대상 히스토리를 조회한다. AlarmScheduler 전용.
+     * alarm_enabled=true인 지원건의 히스토리 중 scheduled_at이 지정 범위 내인 항목 반환.
+     *
+     * @param start 조회 범위 시작 일시
+     * @param end   조회 범위 종료 일시
+     * @return 알림 대상 ApplicationHistory 목록 (Application fetch join 포함)
+     */
+    public List<ApplicationHistory> findScheduledAlarmTargetsForScheduler(LocalDateTime start, LocalDateTime end) {
+        return applicationHistoryRepository.findScheduledAlarmTargets(start, end);
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // GET /api/alarms 알림 이력 조회용 메서드 (AlarmService 경유 호출)
+    // ───────────────────────────────────────────────────────────────────────
+
+    /**
+     * applicationId 목록으로 회사명 맵을 반환한다. 소프트 삭제된 지원건도 포함한다.
+     * AlarmService의 GET /api/alarms 응답 구성에 사용.
+     *
+     * @param applicationIds 조회할 Application ID 목록
+     * @return applicationId → companyName 맵
+     */
+    public Map<Long, String> findCompanyNamesByIdsForAlarmHistory(List<Long> applicationIds) {
+        if (applicationIds.isEmpty()) {
+            return Map.of();
+        }
+        // NOTE: native query로 소프트 삭제 무시 — 알림 이력은 삭제된 지원건도 표시해야 함
+        List<Object[]> rows = applicationRepository.findCompanyNamesIncludingDeletedByIds(applicationIds);
+        Map<Long, String> result = new HashMap<>();
+        for (Object[] row : rows) {
+            Long id = ((Number) row[0]).longValue();
+            String companyName = (String) row[1];
+            result.put(id, companyName);
+        }
+        return result;
+    }
+
+    /**
+     * historyId 목록으로 전형 단계명 맵을 반환한다.
+     * AlarmService의 GET /api/alarms 응답 구성에 사용.
+     *
+     * @param historyIds 조회할 ApplicationHistory ID 목록
+     * @return historyId → stage 맵
+     */
+    public Map<Long, String> findStagesByHistoryIdsForAlarmHistory(List<Long> historyIds) {
+        if (historyIds.isEmpty()) {
+            return Map.of();
+        }
+        return applicationHistoryRepository.findByIdIn(historyIds).stream()
+                .collect(Collectors.toMap(ApplicationHistory::getId, ApplicationHistory::getStage));
+    }
+
+    /**
+     * 회원탈퇴 시 해당 유저의 모든 지원을 소프트 삭제한다. UserService 전용.
+     *
+     * @param userId 탈퇴 유저 ID
+     */
+    @Transactional
+    public void softDeleteAllByUserId(Long userId) {
+        List<Application> applications = applicationRepository.findAllByUserIdIgnoreDeleted(userId);
+        applications.forEach(Application::softDelete);
+        log.info("[ApplicationService] 회원탈퇴 지원 소프트 삭제 완료 - userId: {}, count: {}",
+                userId, applications.size());
+    }
+
     public List<CalendarDateResponse> getCalendar(Long userId, LocalDate startDate, LocalDate endDate) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(23, 59, 59);
