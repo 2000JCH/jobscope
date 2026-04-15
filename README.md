@@ -7,7 +7,7 @@
 ## 서비스 소개
 
 노션/엑셀로 직접 만들어 쓰던 지원 관리를 취준에 특화된 형태로 제공합니다.
-어떤 회사가 어느 단계인지, 다음 면접이 언제인지, 합격·불합격 패턴이 어떤지를 한눈에 확인할 수 있습니다.
+어떤 회사가 어느 단계인지, 다음 면접이 언제인지를 한눈에 확인할 수 있습니다.
 
 ### 핵심 기능 (Phase 1 MVP)
 
@@ -17,6 +17,7 @@
 - 캘린더 — 면접 일정·서류 마감일 시각화 (FullCalendar)
 - 카카오 소셜 로그인
 - 카카오 알림톡 — D-7, D-3, D-1, D-Day 자동 발송 (매일 오전 9시 KST)
+- 알림 이력 조회 및 선택 삭제
 
 ---
 
@@ -42,7 +43,7 @@
 | 상태관리 | Zustand |
 | 캘린더 | FullCalendar |
 | HTTP | Axios |
-| 기타 | PWA (manifest + Service Worker) |
+| 기타 | PWA (vite-plugin-pwa) |
 
 ### 인프라
 | 항목 | 내용 |
@@ -51,8 +52,7 @@
 | DB | MySQL 8.0 (Docker) |
 | 프록시 | Nginx |
 | 컨테이너 | Docker / Docker Compose |
-| CI/CD | GitHub Actions |
-| 프론트 배포 | Vercel / Netlify |
+| CI | GitHub Actions (백엔드 Checkstyle + Test) |
 
 ---
 
@@ -65,16 +65,23 @@ jobscope/
 │       ├── domain/
 │       │   ├── user/        # 유저 도메인
 │       │   ├── application/ # 지원 현황 도메인
-│       │   └── alarm/       # 알림 도메인
+│       │   ├── alarm/       # 알림 도메인
+│       │   └── oauth/       # 카카오 OAuth 도메인
 │       └── global/
-│           ├── auth/        # JWT, Kakao 인증
+│           ├── alarm/       # 알림 스케줄러
+│           ├── auth/        # JWT, 카카오 인증
 │           ├── common/      # 공통 응답, 예외처리
-│           ├── config/      # Security, JPA, Swagger 설정
-│           └── scheduler/   # 알림 스케줄러
+│           └── config/      # Security, JPA, Swagger 설정
 ├── jobscope-frontend/       # React 프론트엔드
+│   └── src/
+│       ├── api/             # Axios 인스턴스 및 도메인별 API 함수
+│       ├── components/      # 재사용 컴포넌트 (alarm, application, common, dashboard)
+│       ├── hooks/           # 커스텀 훅
+│       ├── pages/           # 페이지 컴포넌트
+│       ├── stores/          # Zustand 스토어
+│       └── utils/           # 유틸 함수
 ├── nginx/                   # Nginx 리버스 프록시
-│   └── conf/
-│       └── nginx.conf
+│   └── conf/nginx.conf
 └── docker-compose.yml
 ```
 
@@ -91,7 +98,27 @@ jobscope/
 
 `.env` 파일을 생성하고 필요한 값을 채웁니다.
 
-> 필요한 환경변수 목록은 프로젝트 관리자에게 문의하세요.
+```env
+# Database
+DB_ROOT_PASSWORD=
+DB_NAME=
+DB_USERNAME=
+DB_PASSWORD=
+
+# JWT
+JWT_SECRET=
+JWT_ACCESS_EXPIRE=
+JWT_REFRESH_EXPIRE=
+
+# Kakao OAuth
+KAKAO_CLIENT_ID=
+KAKAO_CLIENT_SECRET=
+KAKAO_REDIRECT_URI=
+
+# Frontend
+VITE_KAKAO_CLIENT_ID=
+VITE_KAKAO_REDIRECT_URI=
+```
 
 ### 2. 실행
 
@@ -120,7 +147,7 @@ Base URL: `/api`
 | 대시보드 | `GET /api/applications/dashboard` |
 | 캘린더 | `GET /api/applications/calendar` |
 | 전형 히스토리 | `POST/PATCH/DELETE /api/applications/{id}/histories/{historyId}` |
-| 알림 로그 | `GET /api/alarms` |
+| 알림 이력 | `GET /api/alarms`, `DELETE /api/alarms/{id}` |
 
 ---
 
@@ -128,7 +155,7 @@ Base URL: `/api`
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| Phase 1 | MVP (현재) | 개발 중 |
+| Phase 1 | MVP (현재) | 완료 |
 | Phase 2 | 합격·불합격 패턴 분석, 전형 소요 기간 통계 | 예정 |
 | Phase 3 | 취준 스터디 그룹, 회사별 채용 인사이트 | 예정 |
 | Phase 4 | B2B (부트캠프·학원 전용 대시보드) | 예정 |
