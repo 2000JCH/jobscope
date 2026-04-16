@@ -9,7 +9,14 @@ function ImminentDeadlineList({ deadlines, onClickApplication }) {
   return (
     <ul className={styles.list}>
       {deadlines.map((d) => (
-        <li key={d.applicationId} className={styles.item} onClick={() => onClickApplication(d.applicationId)}>
+        <li
+          key={d.applicationId}
+          className={styles.item}
+          role="button"
+          tabIndex={0}
+          onClick={() => onClickApplication(d.applicationId)}
+          onKeyDown={(e) => e.key === 'Enter' && onClickApplication(d.applicationId)}
+        >
           <div className={styles.info}>
             <span className={styles.company}>{d.companyName}</span>
             <span className={styles.deadline}>{formatDateTime(d.deadlineAt)}</span>

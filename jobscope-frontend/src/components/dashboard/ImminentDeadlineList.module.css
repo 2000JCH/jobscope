@@ -11,15 +11,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem;
-  background: #f8f9fa;
-  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   min-height: 2.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.15s;
 }
 
 .item:active {
-  background: #e9ecef;
+  transform: scale(0.985);
+  box-shadow: none;
 }
 
 .info {
@@ -31,28 +34,28 @@
 .company {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #212529;
+  color: var(--color-text);
 }
 
 .deadline {
   font-size: 0.75rem;
-  color: #868e96;
+  color: var(--color-text-muted);
 }
 
 .dday {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 700;
-  color: #495057;
+  color: var(--color-text-sub);
   flex-shrink: 0;
 }
 
 .urgent {
-  color: #e03131;
+  color: var(--color-danger);
 }
 
 .empty {
   font-size: 0.875rem;
-  color: #adb5bd;
+  color: var(--color-text-muted);
   text-align: center;
   padding: 1rem 0;
 }

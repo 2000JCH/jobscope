@@ -1,3 +1,5 @@
+import styles from './AlarmLogItem.module.css';
+
 const ALARM_TYPE_LABEL = {
   D7: 'D-7',
   D3: 'D-3',
@@ -11,35 +13,25 @@ function AlarmLogItem({ log, isEditMode, isSelected, onToggle }) {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0.75rem 0',
-        borderBottom: '1px solid #eee',
-        cursor: isEditMode ? 'pointer' : 'default',
-        opacity: isEditMode && !isSelected ? 0.5 : 1,
-      }}
+      className={`${styles.item} ${isEditMode ? styles.clickable : ''} ${isEditMode && !isSelected ? styles.dimmed : ''}`}
       onClick={isEditMode ? onToggle : undefined}
     >
       {isEditMode && (
         <input
           type="checkbox"
+          className={styles.checkbox}
           checked={isSelected}
           onChange={onToggle}
           onClick={(e) => e.stopPropagation()}
-          style={{ marginRight: '0.75rem', flexShrink: 0 }}
         />
       )}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 600 }}>{log.companyName}</div>
-        <div style={{ fontSize: '0.875rem', color: '#555', marginTop: '0.25rem' }}>
-          {typeLabel} · {log.label}
-        </div>
-        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.125rem' }}>{sentDate}</div>
+      <div className={styles.content}>
+        <span className={styles.company}>{log.companyName}</span>
+        <span className={styles.meta}>{typeLabel} · {log.label}</span>
+        <span className={styles.date}>{sentDate}</span>
       </div>
       {!isEditMode && (
-        <span style={{ fontSize: '0.75rem', color: log.isSuccess ? '#22c55e' : '#ef4444' }}>
+        <span className={`${styles.status} ${log.isSuccess ? styles.statusSuccess : styles.statusFail}`}>
           {log.isSuccess ? '발송 완료' : '발송 실패'}
         </span>
       )}
