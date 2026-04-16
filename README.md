@@ -43,6 +43,8 @@
 | 상태관리 | Zustand |
 | 캘린더 | FullCalendar |
 | HTTP | Axios |
+| 아이콘 | lucide-react |
+| 폰트 | Pretendard |
 | 기타 | PWA (vite-plugin-pwa) |
 
 ### 인프라
