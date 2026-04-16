@@ -9,7 +9,14 @@ function WeekScheduleList({ schedules, onClickApplication }) {
   return (
     <ul className={styles.list}>
       {schedules.map((s) => (
-        <li key={`${s.applicationId}-${s.scheduledAt}`} className={styles.item} onClick={() => onClickApplication(s.applicationId)}>
+        <li
+          key={`${s.applicationId}-${s.scheduledAt}`}
+          className={styles.item}
+          role="button"
+          tabIndex={0}
+          onClick={() => onClickApplication(s.applicationId)}
+          onKeyDown={(e) => e.key === 'Enter' && onClickApplication(s.applicationId)}
+        >
           <div className={styles.info}>
             <span className={styles.company}>{s.companyName}</span>
             <span className={styles.stage}>{s.stage}</span>
