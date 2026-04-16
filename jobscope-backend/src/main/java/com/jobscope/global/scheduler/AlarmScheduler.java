@@ -38,8 +38,8 @@ public class AlarmScheduler {
      * - DEADLINE 알림: 서류 마감일이 오늘인 지원건
      * - D1/D3/D7 알림: 전형 예정일이 내일/3일 후/7일 후인 히스토리
      */
-    // @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
     public void runDailyAlarms() {
         LocalDate today = LocalDate.now(KST);
         log.info("[AlarmScheduler] 일일 알림 발송 시작 - date: {}", today);
