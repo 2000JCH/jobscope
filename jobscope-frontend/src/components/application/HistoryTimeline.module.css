@@ -1,0 +1,11 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  font-size: 0.875rem;
+  color: #adb5bd;
+  text-align: center;
+  padding: 1.5rem 0;
+}
