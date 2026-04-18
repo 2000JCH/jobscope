@@ -25,6 +25,7 @@ services:
       - db-net
 
   backend:
+    image: 2000jch/jobscope-backend:latest
     build:
       context: ./jobscope-backend
       dockerfile: Dockerfile
@@ -55,6 +56,7 @@ services:
       - backend-net
 
   frontend:
+    image: 2000jch/jobscope-frontend:latest
     build:
       context: ./jobscope-frontend
       dockerfile: Dockerfile
@@ -70,6 +72,7 @@ services:
       - frontend-net
 
   nginx:
+    image: 2000jch/jobscope-nginx:latest
     build:
       context: ./nginx
       dockerfile: Dockerfile
