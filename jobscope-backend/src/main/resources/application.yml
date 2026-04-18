@@ -37,8 +37,21 @@ cors:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    enabled: true
   api-docs:
     path: /api-docs
+    enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
 
 management:
   endpoints:
