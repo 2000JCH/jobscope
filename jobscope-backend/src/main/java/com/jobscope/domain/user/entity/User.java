@@ -39,6 +39,9 @@ public class User extends BaseEntity {
     @Column(length = 255)
     private String profileImage;
 
+    @Column(length = 500)
+    private String customProfileImage;
+
     @Column(length = 20)
     private String phoneNumber;
 
@@ -82,6 +85,22 @@ public class User extends BaseEntity {
     public void updateRefreshToken(String refreshToken, LocalDateTime expiresAt) {
         this.refreshToken = refreshToken;
         this.refreshTokenExpiresAt = expiresAt;
+    }
+
+    /**
+     * S3에 업로드한 커스텀 프로필 이미지 URL을 저장한다.
+     *
+     * @param imageUrl S3 이미지 URL
+     */
+    public void updateProfileImage(String imageUrl) {
+        this.customProfileImage = imageUrl;
+    }
+
+    /**
+     * 커스텀 프로필 이미지를 초기화한다 (카카오 기본 이미지로 복귀).
+     */
+    public void clearCustomProfileImage() {
+        this.customProfileImage = null;
     }
 
     /**

@@ -13,14 +13,19 @@ public class UserResponse {
     private String email;
     private String profileImage;
     private String phoneNumber;
+    private Boolean hasCustomProfileImage;
 
     public static UserResponse from(User user) {
+        String effectiveProfileImage = user.getCustomProfileImage() != null
+                ? user.getCustomProfileImage()
+                : user.getProfileImage();
         return UserResponse.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .profileImage(user.getProfileImage())
+                .profileImage(effectiveProfileImage)
                 .phoneNumber(user.getPhoneNumber())
+                .hasCustomProfileImage(user.getCustomProfileImage() != null)
                 .build();
     }
 }

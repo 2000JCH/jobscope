@@ -25,7 +25,8 @@ public enum ErrorCode {
 
     // 외부 API
     KAKAO_AUTH_FAILED(502, "카카오 인증에 실패했습니다."),
-    ALARM_SEND_FAILED(502, "알림톡 발송에 실패했습니다.");
+    ALARM_SEND_FAILED(502, "알림톡 발송에 실패했습니다."),
+    IMAGE_UPLOAD_FAILED(502, "이미지 업로드에 실패했습니다.");
 
     private final int status;
     private final String message;
