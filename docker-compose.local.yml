@@ -49,6 +49,10 @@ services:
       CORS_ALLOWED_ORIGINS: http://localhost
       COOKIE_SECURE: "false"
       SPRING_PROFILES_ACTIVE: default
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-jobscope1}
+      AWS_S3_REGION: ${AWS_S3_REGION:-ap-northeast-2}
     expose:
       - "8080"
     networks:
