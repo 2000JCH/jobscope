@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMe, updateMe, deleteMe, logout } from '../api/auth';
+import { logout } from '../api/auth';
+import { getMe, updateMe, deleteMe, updateProfileImage, resetProfileImage } from '../api/user';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useAlarmLogs } from '../hooks/useAlarmLogs';
 import AlarmLogItem from '../components/alarm/AlarmLogItem';
-import { User } from 'lucide-react';
+import { User, Camera } from 'lucide-react';
 import styles from './MyPage.module.css';
 
 function MyPage() {
@@ -18,7 +19,9 @@ function MyPage() {
   const [nickname, setNickname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
   const feedbackTimerRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const { logs, loading: logsLoading, currentPage, totalPages, load: loadLogs, deleteAndReload } = useAlarmLogs();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -61,6 +64,50 @@ function MyPage() {
       })
       .catch(() => {
         showFeedback('수정에 실패했습니다.', 'error');
+      });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      showFeedback('jpg, png 형식만 업로드할 수 있습니다.', 'error');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showFeedback('5MB 이하 이미지만 업로드할 수 있습니다.', 'error');
+      e.target.value = '';
+      return;
+    }
+    setImageUploading(true);
+    updateProfileImage(file)
+      .then((res) => {
+        const newUrl = res.data.data.profileImage;
+        setProfile((prev) => ({ ...prev, profileImage: newUrl, hasCustomProfileImage: true }));
+        setAuth({ ...currentUser, profileImage: newUrl }, currentAccessToken);
+        showFeedback('프로필 이미지가 변경됐습니다.');
+      })
+      .catch(() => {
+        showFeedback('이미지 업로드에 실패했습니다.', 'error');
+      })
+      .finally(() => {
+        setImageUploading(false);
+        e.target.value = '';
+      });
+  };
+
+  const handleImageReset = () => {
+    resetProfileImage()
+      .then(() => getMe())
+      .then((res) => {
+        const data = res.data.data;
+        setProfile(data);
+        setAuth({ ...currentUser, profileImage: data.profileImage }, currentAccessToken);
+        showFeedback('기본 이미지로 초기화됐습니다.');
+      })
+      .catch(() => {
+        showFeedback('초기화에 실패했습니다.', 'error');
       });
   };
 
@@ -117,13 +164,37 @@ function MyPage() {
           <h2 className={styles.sectionTitle}>프로필</h2>
         </div>
         <div className={styles.profileCard}>
-          {profile.profileImage ? (
-            <img src={profile.profileImage} alt="프로필" className={styles.avatar} />
-          ) : (
-            <div className={styles.avatarPlaceholder}>
-              <User size={22} />
-            </div>
-          )}
+          <div className={styles.avatarWrapper}>
+            <button
+              className={styles.avatarBtn}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={imageUploading}
+              aria-label="프로필 이미지 변경"
+            >
+              {profile.profileImage ? (
+                <img src={profile.profileImage} alt="프로필" className={styles.avatar} />
+              ) : (
+                <div className={styles.avatarPlaceholder}>
+                  <User size={22} />
+                </div>
+              )}
+              <div className={styles.avatarOverlay}>
+                <Camera size={16} />
+              </div>
+            </button>
+            {profile.hasCustomProfileImage && (
+              <button className={styles.imageResetBtn} onClick={handleImageReset}>
+                초기화
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              className={styles.fileInput}
+              onChange={handleImageChange}
+            />
+          </div>
           <span className={styles.profileEmail}>{profile.email ?? ''}</span>
         </div>
         <div className={styles.formFields}>

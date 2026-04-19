@@ -67,12 +67,37 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.avatarWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.avatarBtn {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.avatarBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .avatar {
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0;
+  display: block;
 }
 
 .avatarPlaceholder {
@@ -83,8 +108,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   color: var(--color-text-muted);
+}
+
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.avatarBtn:hover .avatarOverlay,
+.avatarBtn:active .avatarOverlay {
+  opacity: 1;
+}
+
+.imageResetBtn {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-main);
+  text-decoration: underline;
+  min-height: 1.25rem;
+}
+
+.fileInput {
+  display: none;
 }
 
 .profileEmail {
