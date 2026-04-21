@@ -1,5 +1,7 @@
 package com.jobscope.domain.user.service;
 
+import com.jobscope.domain.application.dto.response.JourneyResponse;
+import com.jobscope.domain.application.service.AnalyticsService;
 import com.jobscope.domain.application.service.ApplicationService;
 import com.jobscope.domain.oauth.service.OAuthTokenService;
 import com.jobscope.domain.user.dto.request.UpdateUserRequest;
@@ -36,6 +38,7 @@ public class UserService {
     private final KakaoAuthService kakaoAuthService;
     private final OAuthTokenService oAuthTokenService;
     private final ApplicationService applicationService;
+    private final AnalyticsService analyticsService;
     private final S3Service s3Service;
 
     /**
@@ -201,6 +204,16 @@ public class UserService {
         oAuthTokenService.deleteByUserId(userId);
         userRepository.deleteById(userId);
         log.info("[UserService] 회원 탈퇴 완료 - userId: {}", userId);
+    }
+
+    /**
+     * MY 탭 취준 여정 데이터를 조회한다. AnalyticsService에 위임한다.
+     *
+     * @param userId 인증된 사용자 ID
+     * @return 취준 여정 응답
+     */
+    public JourneyResponse getJourney(Long userId) {
+        return analyticsService.getJourney(userId);
     }
 
     private User findUserById(Long userId) {
