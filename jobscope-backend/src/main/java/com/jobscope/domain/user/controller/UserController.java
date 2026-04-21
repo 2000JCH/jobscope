@@ -1,5 +1,6 @@
 package com.jobscope.domain.user.controller;
 
+import com.jobscope.domain.application.dto.response.JourneyResponse;
 import com.jobscope.domain.user.dto.request.UpdateUserRequest;
 import com.jobscope.domain.user.dto.response.ProfileImageResponse;
 import com.jobscope.domain.user.dto.response.UserResponse;
@@ -54,6 +55,12 @@ public class UserController {
             @AuthenticationPrincipal Long userId) {
         userService.resetProfileImage(userId);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @GetMapping("/me/journey")
+    public ResponseEntity<ApiResponse<JourneyResponse>> getJourney(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(userService.getJourney(userId)));
     }
 
     @DeleteMapping("/me")

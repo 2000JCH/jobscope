@@ -42,4 +42,25 @@ public interface ApplicationHistoryRepository extends JpaRepository<ApplicationH
 
     // NOTE: GET /api/alarms 알림 이력 조회용 — historyId 배치 조회로 stage 이름 가져오기
     List<ApplicationHistory> findByIdIn(List<Long> ids);
+
+    // NOTE: Analytics 전용 — JOIN FETCH로 N+1 방지, @SQLRestriction으로 삭제된 지원건 자동 제외
+    @Query("SELECT h FROM ApplicationHistory h JOIN FETCH h.application a WHERE a.id IN :appIds")
+    List<ApplicationHistory> findByApplicationIdIn(@Param("appIds") List<Long> appIds);
+
+    // NOTE: 대시보드 넛지 전용 — 히스토리 미입력(서류/PENDING 1건만 있는 IN_PROGRESS) 지원건 수
+    // Native Query 사용으로 deleted_at IS NULL 조건 직접 명시 (규칙 7 준수)
+    @Query(value =
+            "SELECT COUNT(*) FROM (" +
+            "  SELECT h.application_id" +
+            "  FROM application_history h" +
+            "  INNER JOIN application a ON h.application_id = a.id" +
+            "  WHERE a.user_id = :userId" +
+            "  AND a.deleted_at IS NULL" +
+            "  AND a.result = 'IN_PROGRESS'" +
+            "  GROUP BY h.application_id" +
+            "  HAVING COUNT(*) = 1" +
+            "  AND SUM(CASE WHEN h.stage_result != 'PENDING' THEN 1 ELSE 0 END) = 0" +
+            ") AS t",
+            nativeQuery = true)
+    long countUnstatedInProgressByUserId(@Param("userId") Long userId);
 }
