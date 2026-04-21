@@ -12,4 +12,5 @@ public class DashboardResponse {
     private DashboardSummaryResponse summary;
     private List<DashboardScheduleResponse> thisWeekSchedules;
     private List<DashboardDeadlineResponse> imminentDeadlines;
+    private long unstatedCount;
 }

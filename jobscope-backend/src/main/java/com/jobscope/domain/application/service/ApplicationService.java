@@ -262,10 +262,13 @@ public class ApplicationService {
                         .build())
                 .toList();
 
+        long unstatedCount = applicationHistoryRepository.countUnstatedInProgressByUserId(userId);
+
         return DashboardResponse.builder()
                 .summary(summary)
                 .thisWeekSchedules(thisWeekSchedules)
                 .imminentDeadlines(imminentDeadlines)
+                .unstatedCount(unstatedCount)
                 .build();
     }
 
