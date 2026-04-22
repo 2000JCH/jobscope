@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Calendar, User } from 'lucide-react';
+import { House, ClipboardList, Calendar, BarChart2, User } from 'lucide-react';
 import styles from './BottomNav.module.css';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: '대시보드' },
+  { to: '/dashboard', icon: House, label: '홈' },
   { to: '/applications', icon: ClipboardList, label: '지원현황' },
   { to: '/calendar', icon: Calendar, label: '캘린더' },
-  { to: '/mypage', icon: User, label: '마이페이지' },
+  { to: '/analytics', icon: BarChart2, label: '분석' },
+  { to: '/mypage', icon: User, label: 'MY' },
 ];
 
 function BottomNav() {
