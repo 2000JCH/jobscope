@@ -47,7 +47,8 @@ public interface ApplicationHistoryRepository extends JpaRepository<ApplicationH
     @Query("SELECT h FROM ApplicationHistory h JOIN FETCH h.application a WHERE a.id IN :appIds")
     List<ApplicationHistory> findByApplicationIdIn(@Param("appIds") List<Long> appIds);
 
-    // NOTE: 대시보드 넛지 전용 — 히스토리 미입력(서류/PENDING 1건만 있는 IN_PROGRESS) 지원건 수
+    // NOTE: 대시보드 넛지 전용 — 서류 마감일이 지났는데 히스토리 미입력(서류/PENDING 1건만 있는 IN_PROGRESS) 지원건 수
+    // 마감일 없는 지원건은 결과 판단 기준이 없으므로 제외
     // Native Query 사용으로 deleted_at IS NULL 조건 직접 명시 (규칙 7 준수)
     @Query(value =
             "SELECT COUNT(*) FROM (" +
@@ -57,6 +58,8 @@ public interface ApplicationHistoryRepository extends JpaRepository<ApplicationH
             "  WHERE a.user_id = :userId" +
             "  AND a.deleted_at IS NULL" +
             "  AND a.result = 'IN_PROGRESS'" +
+            "  AND a.deadline_at IS NOT NULL" +
+            "  AND a.deadline_at < NOW()" +
             "  GROUP BY h.application_id" +
             "  HAVING COUNT(*) = 1" +
             "  AND SUM(CASE WHEN h.stage_result != 'PENDING' THEN 1 ELSE 0 END) = 0" +
