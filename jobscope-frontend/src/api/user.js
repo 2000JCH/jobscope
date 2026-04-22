@@ -16,3 +16,5 @@ export const updateProfileImage = (file) => {
 
 export const resetProfileImage = () =>
   instance.delete('/api/users/me/profile-image');
+
+export const getJourney = () => instance.get('/api/users/me/journey');

@@ -3,11 +3,13 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useCalendarEvents } from '../hooks/useCalendarEvents';
+import { useCalendarTheme } from '../hooks/useCalendarTheme';
 import ApplicationDetailBottomSheet from '../components/application/ApplicationDetailBottomSheet';
 import styles from './CalendarPage.module.css';
 
 function CalendarPage() {
   const { events, loading, load } = useCalendarEvents();
+  const { themeId } = useCalendarTheme();
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [currentRange, setCurrentRange] = useState(null);
 
@@ -29,7 +31,7 @@ function CalendarPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>캘린더</h1>
       {loading && <p className={styles.loading}>불러오는 중...</p>}
-      <div className={styles.calendar}>
+      <div className={`${styles.calendar} cal-${themeId}`}>
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"

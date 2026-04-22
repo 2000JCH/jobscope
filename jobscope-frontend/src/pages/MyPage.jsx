@@ -4,8 +4,11 @@ import { logout } from '../api/auth';
 import { getMe, updateMe, deleteMe, updateProfileImage, resetProfileImage } from '../api/user';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useAlarmLogs } from '../hooks/useAlarmLogs';
+import { useTheme } from '../hooks/useTheme';
+import { useCalendarTheme, CALENDAR_THEMES } from '../hooks/useCalendarTheme';
 import AlarmLogItem from '../components/alarm/AlarmLogItem';
-import { User, Camera } from 'lucide-react';
+import JourneySection from '../components/mypage/JourneySection';
+import { User, Camera, Settings } from 'lucide-react';
 import styles from './MyPage.module.css';
 
 function MyPage() {
@@ -26,6 +29,9 @@ function MyPage() {
   const { logs, loading: logsLoading, currentPage, totalPages, load: loadLogs, deleteAndReload } = useAlarmLogs();
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [showSettings, setShowSettings] = useState(false);
+  const { isDark, setIsDark } = useTheme();
+  const { themeId, setTheme } = useCalendarTheme();
 
   const showFeedback = useCallback((message, type = 'success') => {
     if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
@@ -151,7 +157,47 @@ function MyPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>마이페이지</h1>
+        <button
+          className={styles.settingsBtn}
+          onClick={() => setShowSettings((v) => !v)}
+          aria-label="설정"
+        >
+          <Settings size={20} />
+        </button>
       </div>
+
+      {showSettings && (
+        <div className={styles.settingsPanel}>
+          <div className={styles.settingsRow}>
+            <span className={styles.settingsLabel}>다크모드</span>
+            <label className={styles.toggle}>
+              <input
+                type="checkbox"
+                checked={isDark}
+                onChange={(e) => setIsDark(e.target.checked)}
+              />
+              <span className={styles.toggleSlider} />
+            </label>
+          </div>
+          <div className={styles.settingsDivider} />
+          <div className={styles.settingsThemeRow}>
+            <span className={styles.settingsLabel}>캘린더 테마</span>
+            <div className={styles.themePicker}>
+              {CALENDAR_THEMES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${styles.themeSwatch} ${themeId === t.id ? styles.themeSwatchActive : ''}`}
+                  style={{ background: t.color }}
+                  onClick={() => setTheme(t.id)}
+                  aria-label={t.label}
+                  title={t.label}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {feedback && (
         <div className={`${styles.feedback} ${feedback.type === 'error' ? styles.feedbackError : styles.feedbackSuccess}`}>
@@ -220,6 +266,13 @@ function MyPage() {
           </div>
         </div>
         <button className={styles.saveBtn} onClick={handleUpdate}>저장</button>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>취준 여정</h2>
+        </div>
+        <JourneySection />
       </section>
 
       <section className={styles.section}>
