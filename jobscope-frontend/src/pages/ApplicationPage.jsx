@@ -1,5 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useApplicationList } from '../hooks/useApplicationList';
+import { useDragOrder } from '../hooks/useDragOrder';
+import { deleteApplication } from '../api/application';
+import SortableApplicationCard from '../components/application/SortableApplicationCard';
 import ApplicationCard from '../components/application/ApplicationCard';
 import ApplicationListFilter from '../components/application/ApplicationListFilter';
 import ApplicationDetailBottomSheet from '../components/application/ApplicationDetailBottomSheet';
@@ -17,14 +22,81 @@ function ApplicationPage() {
     reload,
   } = useApplicationList();
 
+  const { orderedItems, handleDragEnd } = useDragOrder('app-order', applications);
+
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [deleting, setDeleting] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+  );
+
+  const toggleItem = useCallback((id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = () => {
+    setSelectedIds(selectedIds.size === orderedItems.length ? new Set() : new Set(orderedItems.map((a) => a.id)));
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`선택한 ${selectedIds.size}건을 삭제하시겠습니까?`)) return;
+    setDeleting(true);
+    try {
+      await Promise.all([...selectedIds].map((id) => deleteApplication(id)));
+      setIsEditMode(false);
+      setSelectedIds(new Set());
+      reload();
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const allSelected = orderedItems.length > 0 && selectedIds.size === orderedItems.length;
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>지원현황</h1>
-        <button className={styles.addBtn} onClick={() => setShowCreateForm(true)}>+ 등록</button>
+        <div className={styles.headerActions}>
+          {!isEditMode && (
+            <>
+              {applications.length > 0 && (
+                <button className={styles.editBtn} onClick={() => { setIsEditMode(true); setSelectedIds(new Set()); }}>
+                  편집
+                </button>
+              )}
+              <button className={styles.addBtn} onClick={() => setShowCreateForm(true)}>+ 등록</button>
+            </>
+          )}
+          {isEditMode && (
+            <>
+              <button className={styles.editActionBtn} onClick={toggleSelectAll}>
+                {allSelected ? '전체 해제' : '전체 선택'}
+              </button>
+              <button className={styles.editActionBtn} onClick={() => { setIsEditMode(false); setSelectedIds(new Set()); }}>
+                취소
+              </button>
+              <button
+                className={styles.deleteBtn}
+                disabled={selectedIds.size === 0 || deleting}
+                onClick={handleDeleteSelected}
+              >
+                삭제 ({selectedIds.size})
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <ApplicationListFilter
@@ -42,18 +114,39 @@ function ApplicationPage() {
       {error && <p className={styles.statusError}>{error}</p>}
 
       {!loading && !error && (
-        <div className={styles.list}>
-          {applications.length === 0
-            ? <p className={styles.empty}>지원 내역이 없습니다.</p>
-            : applications.map((app) => (
-              <ApplicationCard
-                key={app.id}
-                application={app}
-                onClick={() => setSelectedApplicationId(app.id)}
-              />
-            ))
-          }
-        </div>
+        isEditMode ? (
+          <div className={styles.list}>
+            {orderedItems.length === 0
+              ? <p className={styles.empty}>지원 내역이 없습니다.</p>
+              : orderedItems.map((app) => (
+                <ApplicationCard
+                  key={app.id}
+                  application={app}
+                  isEditMode={true}
+                  isSelected={selectedIds.has(app.id)}
+                  onToggle={() => toggleItem(app.id)}
+                />
+              ))
+            }
+          </div>
+        ) : (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={orderedItems.map((a) => a.id)} strategy={verticalListSortingStrategy}>
+              <div className={styles.list}>
+                {orderedItems.length === 0
+                  ? <p className={styles.empty}>지원 내역이 없습니다.</p>
+                  : orderedItems.map((app) => (
+                    <SortableApplicationCard
+                      key={app.id}
+                      application={app}
+                      onClick={() => setSelectedApplicationId(app.id)}
+                    />
+                  ))
+                }
+              </div>
+            </SortableContext>
+          </DndContext>
+        )
       )}
 
       {totalPages > 1 && (
