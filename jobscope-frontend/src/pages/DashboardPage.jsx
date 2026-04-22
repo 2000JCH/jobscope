@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import SummaryCards from '../components/dashboard/SummaryCards';
+import NudgeCard from '../components/dashboard/NudgeCard';
 import WeekScheduleList from '../components/dashboard/WeekScheduleList';
 import ImminentDeadlineList from '../components/dashboard/ImminentDeadlineList';
 import ApplicationDetailBottomSheet from '../components/application/ApplicationDetailBottomSheet';
@@ -20,6 +21,7 @@ function DashboardPage() {
 
       <section className={styles.section}>
         <SummaryCards summary={dashboard.summary} />
+        <NudgeCard count={dashboard.unstatedCount} />
       </section>
 
       <section className={styles.section}>

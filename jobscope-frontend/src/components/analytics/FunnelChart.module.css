@@ -1,0 +1,91 @@
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.pendingNote {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  padding: 0.25rem 0 0.25rem 0.25rem;
+}
+
+.stageRow {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.stageRow.maxDrop {
+  background: var(--color-warning-bg);
+}
+
+.stageName {
+  width: 4.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.barWrap {
+  flex: 1;
+  height: 0.5rem;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+  min-width: 4px;
+  transition: width 0.4s ease;
+}
+
+.stageRow.maxDrop .bar {
+  background: var(--color-warning);
+}
+
+.stageStats {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  min-width: 5rem;
+  justify-content: flex-end;
+}
+
+.rate {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stageRow.maxDrop .rate {
+  color: var(--color-warning);
+}
+
+.count {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.pending {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
