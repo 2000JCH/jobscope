@@ -21,11 +21,15 @@ import com.jobscope.global.common.exception.ErrorCode;
 import com.jobscope.global.infra.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,11 +71,12 @@ public class UserService {
                                 .build()
                 ));
 
-        String accessToken = jwtProvider.createAccessToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId(), user.getRole());
         String refreshToken = jwtProvider.createRefreshToken(user.getId());
         LocalDateTime expiresAt = LocalDateTime.now()
                 .plusNanos(jwtProvider.getRefreshTokenExpire() * 1_000_000L);
         user.updateRefreshToken(refreshToken, expiresAt);
+        user.updateLastLoginAt();
 
         oAuthTokenService.saveOrUpdate(user.getId(), kakaoTokenInfo);
 
@@ -107,7 +112,7 @@ public class UserService {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
-        String newAccessToken = jwtProvider.createAccessToken(userId);
+        String newAccessToken = jwtProvider.createAccessToken(userId, user.getRole());
         log.info("[UserService] Access Token 재발급 완료 - userId: {}", userId);
 
         return RefreshResponse.builder()
@@ -214,6 +219,62 @@ public class UserService {
      */
     public JourneyResponse getJourney(Long userId) {
         return analyticsService.getJourney(userId);
+    }
+
+    // ── 관리자 전용 메서드 ────────────────────────────────────────────────
+
+    /**
+     * 전체 사용자 수를 반환한다.
+     */
+    public long getTotalUserCount() {
+        return userRepository.count();
+    }
+
+    /**
+     * 특정 시각 이후 가입한 사용자 수를 반환한다.
+     */
+    public long getNewUserCountSince(LocalDateTime since) {
+        return userRepository.countByCreatedAtAfter(since);
+    }
+
+    /**
+     * 특정 시각 이후 로그인한 활성 사용자 수를 반환한다.
+     */
+    public long getActiveUserCountSince(LocalDateTime since) {
+        return userRepository.countByLastLoginAtAfter(since);
+    }
+
+    /**
+     * 특정 시각 이후 일별 신규 가입 수 raw 데이터를 반환한다.
+     */
+    public List<Object[]> getDailySignupsRaw(LocalDateTime since) {
+        return userRepository.findDailySignupsSince(since);
+    }
+
+    /**
+     * 관리자용 사용자 목록을 페이지로 조회한다 (최신 가입순).
+     */
+    @Transactional(readOnly = true)
+    public Page<User> getAllUsersForAdmin(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+    }
+
+    /**
+     * 관리자가 특정 사용자를 강제 삭제한다.
+     */
+    @Transactional
+    public void deleteUserByAdmin(Long adminId, Long targetUserId) {
+        if (adminId.equals(targetUserId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        User user = findUserById(targetUserId);
+        if (user.getCustomProfileImage() != null) {
+            s3Service.deleteImage(user.getCustomProfileImage());
+        }
+        applicationService.softDeleteAllByUserId(targetUserId);
+        oAuthTokenService.deleteByUserId(targetUserId);
+        userRepository.deleteById(targetUserId);
+        log.info("[UserService] 관리자 회원 삭제 완료 - targetUserId: {}", targetUserId);
     }
 
     private User findUserById(Long userId) {
