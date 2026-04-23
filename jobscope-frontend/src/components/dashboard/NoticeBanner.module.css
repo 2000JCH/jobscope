@@ -1,0 +1,22 @@
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1rem;
+}
+.body { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+.title { font-size: 0.9375rem; font-weight: 700; color: var(--color-primary); }
+.content { font-size: 0.875rem; color: var(--color-text-sub); margin: 0; white-space: pre-wrap; }
+.close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+}

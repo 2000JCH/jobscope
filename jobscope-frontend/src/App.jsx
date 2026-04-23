@@ -6,7 +6,9 @@ import ApplicationPage from './pages/ApplicationPage';
 import CalendarPage from './pages/CalendarPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MyPage from './pages/MyPage';
+import AdminPage from './pages/AdminPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import AdminRoute from './components/common/AdminRoute';
 import BottomNav from './components/common/BottomNav';
 
 function App() {
@@ -58,6 +60,14 @@ function App() {
               <MyPage />
               <BottomNav />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminPage />
+            </AdminRoute>
           }
         />
       </Routes>

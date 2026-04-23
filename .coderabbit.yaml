@@ -7,6 +7,7 @@ reviews:
   poem: false
   review_status: true
   collapse_walkthrough: false
+  sequence_diagrams: false
   pre_merge_checks:
     docstrings:
       mode: "off"

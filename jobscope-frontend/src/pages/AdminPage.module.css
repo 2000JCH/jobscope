@@ -1,0 +1,61 @@
+.page {
+  min-height: 100dvh;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo { font-size: 1rem; font-weight: 800; color: var(--color-primary); }
+.headerRight { display: flex; align-items: center; gap: 0.75rem; }
+.adminBadge { font-size: 0.8125rem; color: var(--color-text-sub); }
+.dashboardBtn {
+  display: flex; align-items: center; gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--color-surface-2);
+  border: none; border-radius: var(--radius-md);
+  font-size: 0.8125rem; color: var(--color-text-sub);
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 1rem;
+}
+.tab {
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tabActive {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 700;
+}
+
+.content {
+  flex: 1;
+  padding: 1.25rem 1rem;
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}

@@ -8,7 +8,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useCalendarTheme, CALENDAR_THEMES } from '../hooks/useCalendarTheme';
 import AlarmLogItem from '../components/alarm/AlarmLogItem';
 import JourneySection from '../components/mypage/JourneySection';
-import { User, Camera, Settings } from 'lucide-react';
+import { User, Camera, Settings, ShieldCheck } from 'lucide-react';
 import styles from './MyPage.module.css';
 
 function MyPage() {
@@ -335,6 +335,12 @@ function MyPage() {
           <button className={styles.logoutBtn} onClick={handleLogout}>로그아웃</button>
           <button className={styles.withdrawBtn} onClick={handleDelete}>회원탈퇴</button>
         </div>
+        {currentUser?.role === 'ADMIN' && (
+          <button className={styles.adminBtn} onClick={() => navigate('/admin')}>
+            <ShieldCheck size={15} />
+            관리자 페이지
+          </button>
+        )}
       </section>
     </div>
   );
