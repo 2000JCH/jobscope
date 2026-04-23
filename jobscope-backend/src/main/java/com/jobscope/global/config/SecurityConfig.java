@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 AntPathRequestMatcher.antMatcher("/swagger-ui.html"),
                                 AntPathRequestMatcher.antMatcher("/api-docs/**")
                         ).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

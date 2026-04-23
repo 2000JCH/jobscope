@@ -1,5 +1,6 @@
 package com.jobscope.global.auth;
 
+import com.jobscope.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -35,13 +36,14 @@ public class JwtProvider {
     }
 
     /**
-     * Access Token을 생성한다.
+     * Access Token을 생성한다. role claim을 포함한다.
      *
      * @param userId 사용자 ID (subject로 저장)
+     * @param role   사용자 역할
      * @return 생성된 Access Token
      */
-    public String createAccessToken(Long userId) {
-        return buildToken(userId, accessTokenExpire);
+    public String createAccessToken(Long userId, UserRole role) {
+        return buildToken(userId, role, accessTokenExpire);
     }
 
     /**
@@ -62,6 +64,16 @@ public class JwtProvider {
      */
     public Long getUserId(String token) {
         return Long.parseLong(parseClaims(token).getSubject());
+    }
+
+    /**
+     * 토큰에서 role claim을 추출한다. claim이 없으면 null을 반환한다.
+     *
+     * @param token JWT 토큰
+     * @return role 문자열 (없으면 null)
+     */
+    public String getRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     /**
@@ -87,6 +99,17 @@ public class JwtProvider {
      */
     public long getRefreshTokenExpire() {
         return refreshTokenExpire;
+    }
+
+    private String buildToken(Long userId, UserRole role, long expireMs) {
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(userId.toString())
+                .claim("role", role != null ? role.name() : UserRole.USER.name())
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + expireMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     private String buildToken(Long userId, long expireMs) {
