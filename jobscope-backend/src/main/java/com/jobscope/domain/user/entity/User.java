@@ -3,6 +3,8 @@ package com.jobscope.domain.user.entity;
 import com.jobscope.global.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,6 +51,13 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     private LocalDateTime refreshTokenExpiresAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    private LocalDateTime lastLoginAt;
 
     /**
      * 프로필 정보를 수정한다. null인 필드는 변경하지 않는다.
@@ -109,5 +118,12 @@ public class User extends BaseEntity {
     public void clearRefreshToken() {
         this.refreshToken = null;
         this.refreshTokenExpiresAt = null;
+    }
+
+    /**
+     * 마지막 로그인 시각을 현재 시각으로 갱신한다.
+     */
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
