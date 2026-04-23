@@ -84,6 +84,8 @@ CREATE TABLE alarm_log (
     alarm_type              ENUM('D7','D3','D1','DEADLINE') NOT NULL,
     sent_at                 DATETIME    NOT NULL,
     is_success              BOOLEAN     NOT NULL,
+    created_at              DATETIME    NOT NULL,
+    updated_at              DATETIME    NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_alarm_user
         FOREIGN KEY (user_id) REFERENCES users(id)
