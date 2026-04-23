@@ -45,7 +45,7 @@ services:
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       KAKAO_REDIRECT_URI: http://localhost/oauth/callback/kakao
-      JPA_DDL_AUTO: update
+      JPA_DDL_AUTO: validate
       CORS_ALLOWED_ORIGINS: http://localhost
       COOKIE_SECURE: "false"
       SPRING_PROFILES_ACTIVE: default
