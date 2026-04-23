@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import NudgeCard from '../components/dashboard/NudgeCard';
+import NoticeBanner from '../components/dashboard/NoticeBanner';
 import WeekScheduleList from '../components/dashboard/WeekScheduleList';
 import ImminentDeadlineList from '../components/dashboard/ImminentDeadlineList';
 import ApplicationDetailBottomSheet from '../components/application/ApplicationDetailBottomSheet';
@@ -18,6 +19,8 @@ function DashboardPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>대시보드</h1>
+
+      <NoticeBanner />
 
       <section className={styles.section}>
         <SummaryCards summary={dashboard.summary} />
