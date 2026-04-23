@@ -1,8 +1,11 @@
 package com.jobscope.domain.user.service;
 
+import com.jobscope.domain.application.dto.response.JourneyResponse;
+import com.jobscope.domain.application.service.AnalyticsService;
 import com.jobscope.domain.application.service.ApplicationService;
 import com.jobscope.domain.oauth.service.OAuthTokenService;
 import com.jobscope.domain.user.dto.request.UpdateUserRequest;
+import com.jobscope.domain.user.dto.response.ProfileImageResponse;
 import com.jobscope.domain.user.dto.response.UserResponse;
 import com.jobscope.domain.user.entity.User;
 import com.jobscope.domain.user.repository.UserRepository;
@@ -15,10 +18,12 @@ import com.jobscope.global.auth.dto.response.LoginUserResponse;
 import com.jobscope.global.auth.dto.response.RefreshResponse;
 import com.jobscope.global.common.exception.BusinessException;
 import com.jobscope.global.common.exception.ErrorCode;
+import com.jobscope.global.infra.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +38,8 @@ public class UserService {
     private final KakaoAuthService kakaoAuthService;
     private final OAuthTokenService oAuthTokenService;
     private final ApplicationService applicationService;
+    private final AnalyticsService analyticsService;
+    private final S3Service s3Service;
 
     /**
      * 카카오 인가코드로 로그인 또는 회원가입을 처리하고 JWT를 발급한다.
@@ -144,6 +151,44 @@ public class UserService {
     }
 
     /**
+     * 프로필 이미지를 S3에 업로드하고 URL을 저장한다.
+     * 기존 커스텀 이미지가 있으면 S3에서 삭제 후 교체한다.
+     *
+     * @param userId 인증된 사용자 ID
+     * @param file   업로드할 이미지 파일 (jpg, png, 5MB 이하)
+     * @return 새 프로필 이미지 URL
+     */
+    @Transactional
+    public ProfileImageResponse updateProfileImage(Long userId, MultipartFile file) {
+        User user = findUserById(userId);
+        String oldImageUrl = user.getCustomProfileImage();
+        String newImageUrl = s3Service.uploadImage("profile", file);
+        user.updateProfileImage(newImageUrl);
+        if (oldImageUrl != null) {
+            s3Service.deleteImage(oldImageUrl);
+        }
+        log.info("[UserService] 프로필 이미지 업로드 완료 - userId: {}", userId);
+        return ProfileImageResponse.of(newImageUrl);
+    }
+
+    /**
+     * 커스텀 프로필 이미지를 초기화한다 (카카오 기본 이미지로 복귀).
+     * S3에 저장된 이미지를 삭제하고 customProfileImage를 null로 설정한다.
+     *
+     * @param userId 인증된 사용자 ID
+     */
+    @Transactional
+    public void resetProfileImage(Long userId) {
+        User user = findUserById(userId);
+        String imageUrl = user.getCustomProfileImage();
+        if (imageUrl != null) {
+            user.clearCustomProfileImage();
+            s3Service.deleteImage(imageUrl);
+            log.info("[UserService] 프로필 이미지 초기화 완료 - userId: {}", userId);
+        }
+    }
+
+    /**
      * 회원을 탈퇴 처리한다 (Hard Delete).
      * DB FK ON DELETE CASCADE로 APPLICATION, ALARM_LOG 연관 데이터가 함께 삭제된다.
      *
@@ -151,11 +196,24 @@ public class UserService {
      */
     @Transactional
     public void deleteUser(Long userId) {
-        findUserById(userId);
+        User user = findUserById(userId);
+        if (user.getCustomProfileImage() != null) {
+            s3Service.deleteImage(user.getCustomProfileImage());
+        }
         applicationService.softDeleteAllByUserId(userId);
         oAuthTokenService.deleteByUserId(userId);
         userRepository.deleteById(userId);
         log.info("[UserService] 회원 탈퇴 완료 - userId: {}", userId);
+    }
+
+    /**
+     * MY 탭 취준 여정 데이터를 조회한다. AnalyticsService에 위임한다.
+     *
+     * @param userId 인증된 사용자 ID
+     * @return 취준 여정 응답
+     */
+    public JourneyResponse getJourney(Long userId) {
+        return analyticsService.getJourney(userId);
     }
 
     private User findUserById(Long userId) {

@@ -4,6 +4,7 @@ import KakaoCallbackPage from './pages/KakaoCallbackPage';
 import DashboardPage from './pages/DashboardPage';
 import ApplicationPage from './pages/ApplicationPage';
 import CalendarPage from './pages/CalendarPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 import MyPage from './pages/MyPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import BottomNav from './components/common/BottomNav';
@@ -37,6 +38,15 @@ function App() {
           element={
             <ProtectedRoute>
               <CalendarPage />
+              <BottomNav />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <AnalyticsPage />
               <BottomNav />
             </ProtectedRoute>
           }

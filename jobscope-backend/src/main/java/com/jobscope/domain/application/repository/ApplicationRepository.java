@@ -63,6 +63,9 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     @Query("SELECT a FROM Application a WHERE a.userId = :userId")
     List<Application> findAllByUserIdIgnoreDeleted(@Param("userId") Long userId);
 
+    // NOTE: @SQLRestriction 자동 적용 — deleted_at IS NULL 필터링됨
+    List<Application> findByUserId(Long userId);
+
     // NOTE: GET /api/alarms 알림 이력 조회용 — deleted_at IS NULL 조건 명시 (규칙 7 준수)
     // 소프트 삭제된 지원건은 반환되지 않으며, AlarmService에서 "(삭제된 지원)" fallback으로 처리됨
     @Query(value = "SELECT id, company_name FROM application WHERE id IN (:ids) AND deleted_at IS NULL",
