@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { ClipboardList, Calendar, Bell } from 'lucide-react';
 import styles from './MainPage.module.css';
 
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code&scope=talk_message`;
+const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code&scope=profile_nickname`;
 
 const FEATURES = [
   {
