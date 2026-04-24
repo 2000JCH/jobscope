@@ -66,6 +66,15 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     // NOTE: @SQLRestriction 자동 적용 — deleted_at IS NULL 필터링됨
     List<Application> findByUserId(Long userId);
 
+    @Query(value = "SELECT COALESCE(AVG(cnt), 0.0) FROM (SELECT COUNT(*) as cnt FROM application WHERE deleted_at IS NULL GROUP BY user_id) as sub",
+           nativeQuery = true)
+    Double findAvgApplicationsPerUser();
+
+    @Query(value = "SELECT company_name, COUNT(*) as cnt FROM application WHERE deleted_at IS NULL GROUP BY company_name ORDER BY cnt DESC LIMIT :limit",
+           nativeQuery = true)
+    List<Object[]> findTopCompanies(@Param("limit") int limit);
+
+
     // NOTE: GET /api/alarms 알림 이력 조회용 — deleted_at IS NULL 조건 명시 (규칙 7 준수)
     // 소프트 삭제된 지원건은 반환되지 않으며, AlarmService에서 "(삭제된 지원)" fallback으로 처리됨
     @Query(value = "SELECT id, company_name FROM application WHERE id IN (:ids) AND deleted_at IS NULL",

@@ -84,6 +84,20 @@ public class AlarmService {
         log.info("[AlarmService] 알림 이력 삭제 완료 - userId: {}, count: {}", userId, ids.size());
     }
 
+    /**
+     * 관리자용: 지정 기간 내 발송된 알림 수를 반환한다.
+     */
+    public long countTodayAlarms(LocalDateTime start, LocalDateTime end) {
+        return alarmLogRepository.countBySentAtBetween(start, end);
+    }
+
+    /**
+     * 관리자용: 지정 기간 내 발송 실패한 알림 수를 반환한다.
+     */
+    public long countTodayAlarmFailures(LocalDateTime start, LocalDateTime end) {
+        return alarmLogRepository.countBySentAtBetweenAndIsSuccessFalse(start, end);
+    }
+
     // NOTE: REQUIRES_NEW — 각 알림 로그가 독립적인 트랜잭션으로 처리됨
     // 한 건의 DuplicateKeyException이 다른 알림 로그 트랜잭션에 영향을 주지 않도록 격리
     @Transactional(propagation = Propagation.REQUIRES_NEW)

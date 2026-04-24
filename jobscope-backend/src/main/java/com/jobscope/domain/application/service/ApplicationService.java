@@ -401,4 +401,21 @@ public class ApplicationService {
                         .build())
                 .toList();
     }
+
+    // ── 관리자 전용 메서드 ────────────────────────────────────────────────
+
+    /**
+     * 관리자용: 사용자당 평균 지원 수를 반환한다.
+     */
+    public double getAvgApplicationsPerUser() {
+        Double avg = applicationRepository.findAvgApplicationsPerUser();
+        return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+    }
+
+    /**
+     * 관리자용: 지원 수 상위 회사 raw 데이터를 반환한다.
+     */
+    public List<Object[]> getTopCompaniesRaw(int limit) {
+        return applicationRepository.findTopCompanies(limit);
+    }
 }

@@ -21,6 +21,76 @@
   margin: 0;
 }
 
+.headerBtns {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bellBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: var(--color-text-sub);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.bellBtn:active {
+  background: var(--color-surface);
+}
+
+.bellBadge {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-danger);
+}
+
+.noticePanel {
+  margin: 0.75rem 1rem 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem 1rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.noticeTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.noticeContent {
+  font-size: 0.875rem;
+  color: var(--color-text-sub);
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.noticeEmpty {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+
 .settingsBtn {
   display: flex;
   align-items: center;

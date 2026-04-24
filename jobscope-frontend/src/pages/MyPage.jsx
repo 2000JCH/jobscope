@@ -8,7 +8,8 @@ import { useTheme } from '../hooks/useTheme';
 import { useCalendarTheme, CALENDAR_THEMES } from '../hooks/useCalendarTheme';
 import AlarmLogItem from '../components/alarm/AlarmLogItem';
 import JourneySection from '../components/mypage/JourneySection';
-import { User, Camera, Settings } from 'lucide-react';
+import { useNotice } from '../hooks/useNotice';
+import { User, Camera, Settings, Bell, ShieldCheck } from 'lucide-react';
 import styles from './MyPage.module.css';
 
 function MyPage() {
@@ -30,6 +31,8 @@ function MyPage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [showSettings, setShowSettings] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
+  const { notice, hasUnread, markAsRead } = useNotice();
   const { isDark, setIsDark } = useTheme();
   const { themeId, setTheme } = useCalendarTheme();
 
@@ -157,14 +160,44 @@ function MyPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>마이페이지</h1>
-        <button
-          className={styles.settingsBtn}
-          onClick={() => setShowSettings((v) => !v)}
-          aria-label="설정"
-        >
-          <Settings size={20} />
-        </button>
+        <div className={styles.headerBtns}>
+          <button
+            className={styles.bellBtn}
+            onClick={() => {
+              setShowSettings(false);
+              setShowNotice((v) => {
+                if (!v) markAsRead();
+                return !v;
+              });
+            }}
+            aria-label="공지사항"
+          >
+            <Bell size={20} />
+            {hasUnread && <span className={styles.bellBadge} />}
+          </button>
+          <button
+            className={styles.settingsBtn}
+            onClick={() => { setShowNotice(false); setShowSettings((v) => !v); }}
+            aria-label="설정"
+          >
+            <Settings size={20} />
+          </button>
+        </div>
       </div>
+
+      {showNotice && (
+        <div className={styles.noticePanel}>
+          {notice ? (
+            <>
+              <strong className={styles.noticeTitle}>{notice.title}</strong>
+              <p className={styles.noticeContent}>{notice.content}</p>
+            </>
+          ) : (
+            <p className={styles.noticeEmpty}>새로운 알림이 없습니다.</p>
+          )}
+        </div>
+      )}
+
 
       {showSettings && (
         <div className={styles.settingsPanel}>
@@ -335,6 +368,12 @@ function MyPage() {
           <button className={styles.logoutBtn} onClick={handleLogout}>로그아웃</button>
           <button className={styles.withdrawBtn} onClick={handleDelete}>회원탈퇴</button>
         </div>
+        {currentUser?.role === 'ADMIN' && (
+          <button className={styles.adminBtn} onClick={() => navigate('/admin')}>
+            <ShieldCheck size={15} />
+            관리자 페이지
+          </button>
+        )}
       </section>
     </div>
   );

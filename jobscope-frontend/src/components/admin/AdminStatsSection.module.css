@@ -1,0 +1,29 @@
+.wrapper { display: flex; flex-direction: column; gap: 1.5rem; }
+.loading, .error { color: var(--color-text-muted); font-size: 0.875rem; padding: 1rem 0; }
+.error { color: var(--color-danger); }
+
+.section { display: flex; flex-direction: column; gap: 0.75rem; }
+.sectionTitle { font-size: 0.9375rem; font-weight: 700; color: var(--color-text); margin: 0; }
+.trendTitle { font-size: 0.875rem; font-weight: 600; color: var(--color-text-sub); margin: 0 0 0.5rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; }
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1rem;
+  display: flex; flex-direction: column; gap: 0.25rem;
+}
+.cardDanger { border-color: var(--color-danger); background: var(--color-danger-bg); }
+.label { font-size: 0.75rem; color: var(--color-text-muted); }
+.value { font-size: 1.25rem; font-weight: 700; color: var(--color-text); }
+
+.trendTable { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.table th, .table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+.table th { color: var(--color-text-sub); font-weight: 600; background: var(--color-surface); }
+.table td { color: var(--color-text); }
