@@ -202,6 +202,7 @@ public class UserService {
     @Transactional
     public void deleteUser(Long userId) {
         User user = findUserById(userId);
+        kakaoAuthService.unlinkKakaoUser(user.getKakaoId());
         if (user.getCustomProfileImage() != null) {
             s3Service.deleteImage(user.getCustomProfileImage());
         }
@@ -268,6 +269,7 @@ public class UserService {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
         User user = findUserById(targetUserId);
+        kakaoAuthService.unlinkKakaoUser(user.getKakaoId());
         if (user.getCustomProfileImage() != null) {
             s3Service.deleteImage(user.getCustomProfileImage());
         }
