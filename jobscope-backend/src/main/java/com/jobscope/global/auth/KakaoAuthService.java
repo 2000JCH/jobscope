@@ -28,6 +28,7 @@ public class KakaoAuthService {
 
     private static final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
     private static final String KAKAO_USER_URL = "https://kapi.kakao.com/v2/user/me";
+    private static final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
 
     private final RestTemplate restTemplate;
 
@@ -39,6 +40,9 @@ public class KakaoAuthService {
 
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
+
+    @Value("${kakao.admin-key}")
+    private String adminKey;
 
     /**
      * 카카오 인가코드로 액세스 토큰·리프레시 토큰을 교환한다.
@@ -145,6 +149,35 @@ public class KakaoAuthService {
         } catch (RestClientException e) {
             log.error("[KakaoAuthService] 카카오 유저 정보 조회 실패 - {}", e.getMessage(), e);
             throw new BusinessException(ErrorCode.KAKAO_AUTH_FAILED);
+        }
+    }
+
+    /**
+     * 카카오 계정과의 연결을 해제한다 (회원탈퇴 시 호출).
+     * 실패해도 예외를 던지지 않고 로그만 남긴다 — 탈퇴 흐름을 막지 않기 위함.
+     *
+     * @param kakaoId 카카오 유저 ID
+     */
+    public void unlinkKakaoUser(String kakaoId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.set("Authorization", "KakaoAK " + adminKey);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("target_id_type", "user_id");
+            params.add("target_id", kakaoId);
+
+            restTemplate.exchange(
+                    KAKAO_UNLINK_URL,
+                    HttpMethod.POST,
+                    new HttpEntity<>(params, headers),
+                    (Class<Map<String, Object>>) (Class<?>) Map.class
+            );
+
+            log.info("[KakaoAuthService] 카카오 연결 해제 완료 - kakaoId: {}", kakaoId);
+        } catch (RestClientException e) {
+            log.error("[KakaoAuthService] 카카오 연결 해제 실패 - kakaoId: {}, error: {}", kakaoId, e.getMessage());
         }
     }
 
