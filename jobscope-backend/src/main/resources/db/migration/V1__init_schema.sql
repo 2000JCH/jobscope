@@ -1,4 +1,4 @@
--- Phase 1: 카카오 소셜 로그인, 지원 현황 CRUD, 전형 단계 관리, 카카오 알림톡 발송
+-- 초기 스키마 (카카오 소셜 로그인, 지원 현황 CRUD, 전형 단계 관리, 카카오 알림, 어드민, 공지사항)
 
 CREATE TABLE users (
     id                          BIGINT          NOT NULL AUTO_INCREMENT,
@@ -7,9 +7,10 @@ CREATE TABLE users (
     email                       VARCHAR(100),
     profile_image               VARCHAR(255),
     custom_profile_image        VARCHAR(500),
-    phone_number                VARCHAR(20),
     refresh_token               VARCHAR(500),
     refresh_token_expires_at    DATETIME,
+    role                        ENUM('USER','ADMIN') NOT NULL DEFAULT 'USER',
+    last_login_at               DATETIME,
     created_at                  DATETIME        NOT NULL,
     updated_at                  DATETIME        NOT NULL,
     PRIMARY KEY (id),
@@ -100,4 +101,15 @@ CREATE TABLE alarm_log (
     INDEX idx_alarm_sent_at    (sent_at),
     INDEX idx_alarm_history_id (application_history_id),
     UNIQUE KEY uq_alarm_prevent (user_id, application_id, alarm_type, (DATE(sent_at)))
+);
+
+CREATE TABLE notice (
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    title      VARCHAR(200) NOT NULL,
+    content    TEXT         NOT NULL,
+    active     BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at DATETIME     NOT NULL,
+    updated_at DATETIME     NOT NULL,
+    PRIMARY KEY (id),
+    INDEX idx_notice_active (active)
 );
