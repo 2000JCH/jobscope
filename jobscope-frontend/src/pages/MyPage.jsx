@@ -23,6 +23,7 @@ function MyPage() {
   const [nickname, setNickname] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [imageUploading, setImageUploading] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const feedbackTimerRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -67,6 +68,7 @@ function MyPage() {
     updateMe({ nickname })
       .then(() => {
         setAuth({ ...currentUser, nickname }, currentAccessToken);
+        setShowProfileEdit(false);
         showFeedback('프로필이 수정됐습니다.');
       })
       .catch(() => {
@@ -237,9 +239,6 @@ function MyPage() {
       )}
 
       <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>프로필</h2>
-        </div>
         <div className={styles.profileCard}>
           <div className={styles.avatarWrapper}>
             <button
@@ -272,21 +271,33 @@ function MyPage() {
               onChange={handleImageChange}
             />
           </div>
-          <span className={styles.profileEmail}>{profile.email ?? ''}</span>
-        </div>
-        <div className={styles.formFields}>
-          <div className={styles.field}>
-            <span className={styles.label}>닉네임</span>
-            <input
-              className={styles.input}
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="닉네임을 입력하세요"
-              aria-label="닉네임"
-            />
+          <div className={styles.profileInfo}>
+            <span className={styles.profileNickname}>{profile.nickname}</span>
+            <button
+              className={styles.profileViewBtn}
+              onClick={() => setShowProfileEdit((v) => !v)}
+            >
+              {showProfileEdit ? '닫기' : '내 정보 보기'}
+            </button>
           </div>
         </div>
-        <button className={styles.saveBtn} onClick={handleUpdate}>저장</button>
+        {showProfileEdit && (
+          <>
+            <div className={styles.formFields}>
+              <div className={styles.field}>
+                <span className={styles.label}>닉네임</span>
+                <input
+                  className={styles.input}
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  placeholder="닉네임을 입력하세요"
+                  aria-label="닉네임"
+                />
+              </div>
+            </div>
+            <button className={styles.saveBtn} onClick={handleUpdate}>저장</button>
+          </>
+        )}
       </section>
 
       <section className={styles.section}>
