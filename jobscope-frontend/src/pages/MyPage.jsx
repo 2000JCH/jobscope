@@ -21,7 +21,6 @@ function MyPage() {
 
   const [profile, setProfile] = useState(null);
   const [nickname, setNickname] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [imageUploading, setImageUploading] = useState(false);
   const feedbackTimerRef = useRef(null);
@@ -54,7 +53,6 @@ function MyPage() {
         const data = res.data.data;
         setProfile(data);
         setNickname(data.nickname);
-        setPhoneNumber(data.phoneNumber ?? '');
       })
       .catch((err) => {
         if (err.response?.status === 404) {
@@ -66,9 +64,9 @@ function MyPage() {
   }, [navigate, logoutStore]);
 
   const handleUpdate = () => {
-    updateMe({ nickname, phoneNumber })
+    updateMe({ nickname })
       .then(() => {
-        setAuth({ ...currentUser, nickname, phoneNumber }, currentAccessToken);
+        setAuth({ ...currentUser, nickname }, currentAccessToken);
         showFeedback('프로필이 수정됐습니다.');
       })
       .catch(() => {
@@ -285,16 +283,6 @@ function MyPage() {
               onChange={(e) => setNickname(e.target.value)}
               placeholder="닉네임을 입력하세요"
               aria-label="닉네임"
-            />
-          </div>
-          <div className={styles.field}>
-            <span className={styles.label}>전화번호</span>
-            <input
-              className={styles.input}
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="알림톡 수신 번호"
-              aria-label="전화번호"
             />
           </div>
         </div>

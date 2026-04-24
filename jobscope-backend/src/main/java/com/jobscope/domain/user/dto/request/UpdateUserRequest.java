@@ -6,5 +6,4 @@ import lombok.Getter;
 public class UpdateUserRequest {
 
     private String nickname;
-    private String phoneNumber;
 }

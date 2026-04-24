@@ -151,7 +151,7 @@ public class UserService {
     @Transactional
     public void updateMyProfile(Long userId, UpdateUserRequest request) {
         User user = findUserById(userId);
-        user.updateProfile(request.getNickname(), request.getPhoneNumber());
+        user.updateNickname(request.getNickname());
         log.info("[UserService] 프로필 수정 완료 - userId: {}", userId);
     }
 

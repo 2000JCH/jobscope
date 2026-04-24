@@ -12,7 +12,6 @@ public class UserResponse {
     private String nickname;
     private String email;
     private String profileImage;
-    private String phoneNumber;
     private Boolean hasCustomProfileImage;
 
     public static UserResponse from(User user) {
@@ -24,7 +23,6 @@ public class UserResponse {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImage(effectiveProfileImage)
-                .phoneNumber(user.getPhoneNumber())
                 .hasCustomProfileImage(user.getCustomProfileImage() != null)
                 .build();
     }
