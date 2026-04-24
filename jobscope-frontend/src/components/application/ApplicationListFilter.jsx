@@ -1,7 +1,8 @@
+import { Search } from 'lucide-react';
 import { SORT_OPTIONS, RESULT_OPTIONS } from '../../utils/applicationEnum';
 import styles from './ApplicationListFilter.module.css';
 
-function ApplicationListFilter({ search, onSearchChange, results, onResultsChange, sort, onSortChange }) {
+function ApplicationListFilter({ results, onResultsChange, sort, onSortChange, onSearchOpen }) {
   function toggleResult(value) {
     if (results.includes(value)) {
       onResultsChange(results.filter((r) => r !== value));
@@ -12,25 +13,21 @@ function ApplicationListFilter({ search, onSearchChange, results, onResultsChang
 
   return (
     <div className={styles.wrapper}>
-      <input
-        className={styles.searchInput}
-        type="text"
-        placeholder="회사명 검색"
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
-      <div className={styles.row}>
-        <div className={styles.chips}>
-          {RESULT_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              className={`${styles.chip} ${results.includes(opt.value) ? styles.chipActive : ''}`}
-              onClick={() => toggleResult(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+      <div className={styles.chips}>
+        {RESULT_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            className={`${styles.chip} ${results.includes(opt.value) ? styles.chipActive : ''}`}
+            onClick={() => toggleResult(opt.value)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <div className={styles.rightControls}>
+        <button className={styles.searchIconBtn} onClick={onSearchOpen} aria-label="검색">
+          <Search size={16} />
+        </button>
         <select
           className={styles.sortSelect}
           value={sort}
