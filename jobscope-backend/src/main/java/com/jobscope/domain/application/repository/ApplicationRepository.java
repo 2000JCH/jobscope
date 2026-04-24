@@ -74,6 +74,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
            nativeQuery = true)
     List<Object[]> findTopCompanies(@Param("limit") int limit);
 
+
     // NOTE: GET /api/alarms 알림 이력 조회용 — deleted_at IS NULL 조건 명시 (규칙 7 준수)
     // 소프트 삭제된 지원건은 반환되지 않으며, AlarmService에서 "(삭제된 지원)" fallback으로 처리됨
     @Query(value = "SELECT id, company_name FROM application WHERE id IN (:ids) AND deleted_at IS NULL",

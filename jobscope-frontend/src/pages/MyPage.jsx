@@ -198,6 +198,7 @@ function MyPage() {
         </div>
       )}
 
+
       {showSettings && (
         <div className={styles.settingsPanel}>
           <div className={styles.settingsRow}>

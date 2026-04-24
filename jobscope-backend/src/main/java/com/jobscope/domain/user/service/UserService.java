@@ -277,6 +277,7 @@ public class UserService {
         log.info("[UserService] 관리자 회원 삭제 완료 - targetUserId: {}", targetUserId);
     }
 
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
