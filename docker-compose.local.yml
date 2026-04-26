@@ -45,6 +45,7 @@ services:
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       KAKAO_REDIRECT_URI: http://localhost/oauth/callback/kakao
+      KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
       JPA_DDL_AUTO: validate
       CORS_ALLOWED_ORIGINS: http://localhost
       COOKIE_SECURE: "false"

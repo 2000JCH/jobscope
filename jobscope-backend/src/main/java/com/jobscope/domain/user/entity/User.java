@@ -44,9 +44,6 @@ public class User extends BaseEntity {
     @Column(length = 500)
     private String customProfileImage;
 
-    @Column(length = 20)
-    private String phoneNumber;
-
     @Column(length = 500)
     private String refreshToken;
 
@@ -65,12 +62,9 @@ public class User extends BaseEntity {
      * @param nickname    변경할 닉네임 (null이면 유지)
      * @param phoneNumber 변경할 전화번호 (null이면 유지)
      */
-    public void updateProfile(String nickname, String phoneNumber) {
+    public void updateNickname(String nickname) {
         if (nickname != null) {
             this.nickname = nickname;
-        }
-        if (phoneNumber != null) {
-            this.phoneNumber = phoneNumber;
         }
     }
 
