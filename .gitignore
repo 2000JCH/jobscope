@@ -1,6 +1,6 @@
-# Claude
-.claude/
-CLAUDE.md
+# Claude (로컬 전용)
+.claude/sample-imagess/
+.claude/settings.local.json
 
 # Environment
 .env

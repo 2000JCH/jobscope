@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'CMD=$(cat | jq -r \".tool_input.command // empty\"); if echo \"$CMD\" | grep -q \"\\-\\-no-verify\"; then echo \"ERROR: --no-verify 사용 금지. 커밋 전 테스트를 통과해야 합니다.\" >&2; exit 2; fi; exit 0'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'INPUT=$(cat); FILE=$(echo \"$INPUT\" | jq -r \".tool_input.file_path // empty\"); CONTENT=$(echo \"$INPUT\" | jq -r \".tool_input.new_content // .tool_input.content // empty\"); if echo \"$FILE\" | grep -qE \"^\\.env$|\\.env\\.\"; then echo \"ERROR: .env 파일 수정 금지. 민감 정보는 .env 파일로만 관리합니다.\" >&2; exit 2; fi; if echo \"$CONTENT\" | grep -q \"jakarta.transaction.Transactional\"; then echo \"ERROR: jakarta.transaction.Transactional 사용 금지. org.springframework.transaction.annotation.Transactional 을 사용하세요.\" >&2; exit 2; fi; if echo \"$CONTENT\" | grep -qE \"@Setter|@Data\"; then echo \"ERROR: @Setter, @Data 사용 금지. 의미있는 메서드명을 사용하세요. (convention.md 참고)\" >&2; exit 2; fi; if echo \"$CONTENT\" | grep -qE \"group_study|GroupStudy|GroupMember|is_public\"; then echo \"ERROR: Phase 2 이상 기능으로 보이는 코드가 감지되었습니다. 현재 구현 범위는 Phase 1입니다.\" >&2; exit 2; fi; exit 0'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'INPUT=$(cat); if [ \"$(echo $INPUT | jq -r \".stop_hook_active\")\" = \"true\" ]; then exit 0; fi; cd \"$(echo $INPUT | jq -r \".cwd // empty\")\" 2>/dev/null || exit 0; if [ -f \"jobscope-backend/gradlew\" ]; then cd jobscope-backend && set -o pipefail && ./gradlew test -q 2>&1 | tail -20; if [ $? -ne 0 ]; then echo \"TEST_FAILED: 테스트가 실패했습니다. 위 에러를 확인하고 수정하세요.\" >&2; exit 2; fi; fi; exit 0'"
+          }
+        ]
+      }
+    ]
+  }
+}
