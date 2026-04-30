@@ -74,7 +74,7 @@
 ## 운영 환경 정보
 
 - 도메인: https://jscope.duckdns.org
-- EC2: Amazon Linux, t3.micro, IP 3.39.177.234
+- EC2: Amazon Linux, t3.micro
 - 프로젝트 위치: ~/jobscope (EC2)
 - HTTPS 인증서 만료: 2026-07-17 (자동 갱신 설정됨)
 - CD 트리거: main 브랜치 머지 시 자동 배포

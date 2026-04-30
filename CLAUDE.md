@@ -126,13 +126,13 @@ Phase 3 이상 해당 키워드는 신중히 검토 후 구현: group_study, is_
 
 ## 참조 문서
 
-| 문서                  | 내용                                                |
-| --------------------- | --------------------------------------------------- |
-| `docs/architecture.md`        | 패키지 구조, 레이어 규칙, Lombok/트랜잭션/보안 상세 |
-| `docs/db-design.md`           | DDL, 인덱스, JPA 엔티티 작성 규칙                   |
-| `docs/api-design.md`          | 전체 API 명세, 요청/응답 스펙                       |
-| `docs/convention.md`          | 네이밍, URL, HTTP 상태코드, 커밋 규칙               |
-| `docs/phase-roadmap.md`       | Phase 1~4 기능 범위 (현재는 Phase 1만)              |
-| `docs/service-overview.md`    | 서비스 설명, 타겟 유저, 기술 스택                   |
-| `docs/frontend-convention.md` | 프론트엔드 컴포넌트, 상태관리, API 호출 규칙        |
-| `progress.md`                 | 현재 진행 상태 및 다음 할 일                        |
+| 문서                                  | 내용                                                |
+| ------------------------------------- | --------------------------------------------------- |
+| `.claude/docs/architecture.md`        | 패키지 구조, 레이어 규칙, Lombok/트랜잭션/보안 상세 |
+| `.claude/docs/db-design.md`           | DDL, 인덱스, JPA 엔티티 작성 규칙                   |
+| `.claude/docs/api-design.md`          | 전체 API 명세, 요청/응답 스펙                       |
+| `.claude/docs/convention.md`          | 네이밍, URL, HTTP 상태코드, 커밋 규칙               |
+| `.claude/docs/phase-roadmap.md`       | Phase 1~4 기능 범위                                 |
+| `.claude/docs/service-overview.md`    | 서비스 설명, 타겟 유저, 기술 스택                   |
+| `.claude/docs/frontend-convention.md` | 프론트엔드 컴포넌트, 상태관리, API 호출 규칙        |
+| `.claude/progress.md`                 | 현재 진행 상태 및 다음 할 일                        |

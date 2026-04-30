@@ -517,7 +517,7 @@ GET  /actuator/health/**     ← 하위 경로 전체 허용 (/liveness, /readin
 // 반드시 이것만 사용 (Spring)
 import org.springframework.transaction.annotation.Transactional;
 
-// 금지 (jakarta — 트랜잭션 적용 안 됨)
+// 금지 (jakarta — Spring 트랜잭션 전파·롤백 정책과 다를 수 있고, 프로젝트 표준 통일)
 import jakarta.transaction.Transactional;
 ```
 
