@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'INPUT=$(cat); if [ \"$(echo $INPUT | jq -r \".stop_hook_active\")\" = \"true\" ]; then exit 0; fi; cd \"$(echo $INPUT | jq -r \".cwd // empty\")\" 2>/dev/null || exit 0; if [ -f \"jobscope-backend/gradlew\" ]; then cd jobscope-backend && ./gradlew test -q 2>&1 | tail -20; if [ $? -ne 0 ]; then echo \"TEST_FAILED: 테스트가 실패했습니다. 위 에러를 확인하고 수정하세요.\" >&2; exit 2; fi; fi; exit 0'"
+            "command": "bash -c 'INPUT=$(cat); if [ \"$(echo $INPUT | jq -r \".stop_hook_active\")\" = \"true\" ]; then exit 0; fi; cd \"$(echo $INPUT | jq -r \".cwd // empty\")\" 2>/dev/null || exit 0; if [ -f \"jobscope-backend/gradlew\" ]; then cd jobscope-backend && set -o pipefail && ./gradlew test -q 2>&1 | tail -20; if [ $? -ne 0 ]; then echo \"TEST_FAILED: 테스트가 실패했습니다. 위 에러를 확인하고 수정하세요.\" >&2; exit 2; fi; fi; exit 0'"
           }
         ]
       }

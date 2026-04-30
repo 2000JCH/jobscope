@@ -5,7 +5,8 @@ description: 변경사항을 분석해 커밋 메시지 자동 생성 후 커밋
 
 아래 순서로 실행하라:
 
-1. `git pull --rebase origin develop` 을 먼저 실행해 최신 상태로 동기화
+1. `git pull --rebase --autostash origin develop` 을 먼저 실행해 최신 상태로 동기화
+    - `--autostash` 옵션으로 unstaged 변경사항을 자동으로 stash/restore 처리
     - 충돌(conflict)이 발생하면 "충돌이 발생해 진행을 중단했습니다. 직접 해결 후 다시 실행해 주세요." 라고 알리고 즉시 중단
 2. 현재 브랜치명을 확인해 **스코프 자동 감지**
     - 브랜치명이 `-backend`로 끝나면 → `jobscope-backend/` 하위 파일 + 루트의 `docker-compose*.yml` 파일 커밋 대상으로 한정
