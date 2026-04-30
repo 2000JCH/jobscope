@@ -81,7 +81,7 @@
 2. 서버에서 카카오 API로 액세스 토큰 교환
 3. 카카오 유저 정보 조회 후 USER 테이블 upsert (신규면 INSERT, 기존이면 닉네임·프로필 동기화)
 4. 카카오 access_token, refresh_token을 OAUTH_TOKEN 테이블에 upsert (나에게 보내기 발송용)
-5. JWT(AccessToken + RefreshToken) 발급 후 반환
+5. JWT AccessToken 발급 후 바디 반환, RefreshToken은 httpOnly 쿠키로 전달
 
 **[Request Body]**
 | 필드 | 타입 | 필수 | 설명 |
@@ -92,10 +92,12 @@
 | 필드 | 타입 | 설명 |
 |---|---|---|
 | `accessToken` | String | JWT Access Token |
-| `refreshToken` | String | JWT Refresh Token |
 | `user.id` | Long | 내부 유저 ID |
 | `user.nickname` | String | 카카오 닉네임 |
 | `user.profileImage` | String | 카카오 프로필 이미지 URL |
+
+**[Response - Set-Cookie]**
+`refresh_token=<value>; HttpOnly; Secure; SameSite=Lax; Path=/api/auth`
 
 ---
 
@@ -105,11 +107,9 @@
 
 - Refresh Token 검증 후 새 Access Token 발급
 - Refresh Token 자체는 갱신하지 않음
+- Refresh Token은 쿠키로 자동 전달 (`@CookieValue` 수신)
 
-**[Request Body]**
-| 필드 | 타입 | 필수 | 설명 |
-|---|---|---|---|
-| `refreshToken` | String | ✅ | 기존 Refresh Token |
+**[Request Body]** : 없음 (Refresh Token은 httpOnly 쿠키로 자동 전달)
 
 **[Response - data]**
 | 필드 | 타입 | 설명 |
